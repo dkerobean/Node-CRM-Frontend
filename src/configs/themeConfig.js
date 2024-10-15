@@ -17,7 +17,7 @@
  */
 const themeConfig = {
   templateName: 'Vuexy',
-  homePageUrl: '/login',
+  homePageUrl: '/home',
   settingsCookieName: 'vuexy-mui-next-demo-1',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'
