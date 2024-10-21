@@ -70,7 +70,7 @@ const RegForm = () => {
 
         // Redirect to home or dashboard after a short delay
         setTimeout(() => {
-          navigate("/");
+          navigate("/crm");
         }, 1500);
       }
     } catch (error) {

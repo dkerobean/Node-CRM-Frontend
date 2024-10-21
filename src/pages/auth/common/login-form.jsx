@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import Checkbox from "@/components/ui/Checkbox";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios"; // Add axios for API requests
+import axios from "axios";
+import Button from "@/components/ui/Button"; // Import your Button component
 
 const schema = yup
   .object({
@@ -27,12 +28,13 @@ const LoginForm = () => {
   });
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const onSubmit = async (data) => {
+    setIsLoading(true); // Set loading to true
     try {
-      // Send login request to the backend API
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/login`, // Use the environment variable here
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/login`,
         {
           email: data.email,
           password: data.password,
@@ -40,10 +42,7 @@ const LoginForm = () => {
       );
 
       if (response.status === 200) {
-        // Save token to localStorage
-        localStorage.setItem("token", response.data.token); // Adjust the key based on your API response
-
-        // Handle success (e.g., navigate to dashboard)
+        localStorage.setItem("token", response.data.token);
         toast.success("Login successful!", {
           position: "top-right",
           autoClose: 1500,
@@ -55,13 +54,11 @@ const LoginForm = () => {
           theme: "light",
         });
 
-        // Redirect to dashboard after a short delay
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/crm");
         }, 1500);
       }
     } catch (error) {
-      // Display error response from API
       const errorMessage =
         error.response && error.response.data
           ? error.response.data.message || "Invalid credentials"
@@ -76,6 +73,8 @@ const LoginForm = () => {
         progress: undefined,
         theme: "light",
       });
+    } finally {
+      setIsLoading(false); // Set loading to false after the request
     }
   };
 
@@ -87,7 +86,7 @@ const LoginForm = () => {
         type="email"
         register={register}
         error={errors.email}
-        placeholder="Enter your email" // Added placeholder
+        placeholder="Enter your email"
         className="h-[48px]"
       />
       <Textinput
@@ -96,7 +95,7 @@ const LoginForm = () => {
         type="password"
         register={register}
         error={errors.password}
-        placeholder="Enter your password" // Added placeholder
+        placeholder="Enter your password"
         className="h-[48px]"
       />
       <div className="flex justify-between">
@@ -113,7 +112,12 @@ const LoginForm = () => {
         </Link>
       </div>
 
-      <button className="btn btn-dark block w-full text-center">Sign in</button>
+      <Button
+        text="Sign in"
+        type="submit"
+        isLoading={isLoading} // Pass loading state
+        className="btn-dark block w-full text-center"
+      />
     </form>
   );
 };
