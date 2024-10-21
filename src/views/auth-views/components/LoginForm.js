@@ -79,9 +79,12 @@ export const LoginForm = props => {
     };
 
     useEffect(() => {
+        // Redirect if token is available and allowRedirect is true
         if (token !== null && allowRedirect) {
-            navigate(redirect);
+            navigate(redirect || '/dashboard');
         }
+
+        // Hide error message after 3 seconds
         if (showMessage) {
             const timer = setTimeout(() => hideAuthMessage(), 3000);
             return () => {
@@ -100,13 +103,13 @@ export const LoginForm = props => {
                     onClick={() => onGoogleLogin()}
                     className="mr-2"
                     disabled={loading}
-                    icon={<CustomIcon svg={GoogleSVG}/>}
+                    icon={<CustomIcon svg={GoogleSVG} />}
                 >
                     Google
                 </Button>
                 <Button
                     onClick={() => onFacebookLogin()}
-                    icon={<CustomIcon svg={FacebookSVG}/>}
+                    icon={<CustomIcon svg={FacebookSVG} />}
                     disabled={loading}
                 >
                     Facebook
@@ -146,24 +149,21 @@ export const LoginForm = props => {
                         }
                     ]}
                 >
-                    <Input prefix={<MailOutlined className="text-primary" />}/>
+                    <Input prefix={<MailOutlined className="text-primary" />} />
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    label={
-                        <div className={`${showForgetPassword? 'd-flex justify-content-between w-100 align-items-center' : ''}`}>
+                    label={showForgetPassword ? (
+                        <div className="d-flex justify-content-between w-100 align-items-center">
                             <span>Password</span>
-                            {
-                                showForgetPassword &&
-                                <span
-                                    onClick={() => onForgetPasswordClick}
-                                    className="cursor-pointer font-size-sm font-weight-normal text-muted"
-                                >
-                                    Forget Password?
-                                </span>
-                            }
+                            <span
+                                onClick={onForgetPasswordClick}
+                                className="cursor-pointer font-size-sm font-weight-normal text-muted"
+                            >
+                                Forget Password?
+                            </span>
                         </div>
-                    }
+                    ) : 'Password'}
                     rules={[
                         {
                             required: true,
@@ -171,7 +171,7 @@ export const LoginForm = props => {
                         }
                     ]}
                 >
-                    <Input.Password prefix={<LockOutlined className="text-primary" />}/>
+                    <Input.Password prefix={<LockOutlined className="text-primary" />} />
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit" block loading={loading}>
@@ -199,9 +199,9 @@ LoginForm.defaultProps = {
     showForgetPassword: false
 };
 
-const mapStateToProps = ({auth}) => {
-    const {loading, message, showMessage, token, redirect} = auth;
-    return {loading, message, showMessage, token, redirect};
+const mapStateToProps = ({ auth }) => {
+    const { loading, message, showMessage, token, redirect } = auth;
+    return { loading, message, showMessage, token, redirect };
 };
 
 const mapDispatchToProps = {
