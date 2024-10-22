@@ -23,7 +23,7 @@ const login = () => {
                 <img src={isDark ? LogoWhite : Logo} alt="" className="mb-10" />
               </Link>
               <h4>
-                Unlock your Projectsss
+                Unlock your Project
                 <span className="text-slate-800 dark:text-slate-400 font-bold">
                   performance
                 </span>

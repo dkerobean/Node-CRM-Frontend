@@ -28,10 +28,10 @@ const LoginForm = () => {
   });
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    setIsLoading(true); // Set loading to true
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_BACKEND_URL}/api/login`,
@@ -55,14 +55,22 @@ const LoginForm = () => {
         });
 
         setTimeout(() => {
-          navigate("/crm");
-        }, 1500);
+          navigate("/project");
+        }, 1000);
       }
     } catch (error) {
-      const errorMessage =
-        error.response && error.response.data
-          ? error.response.data.message || "Invalid credentials"
-          : "Invalid credentials";
+      // Handle different server responses
+      const statusCode = error.response ? error.response.status : 500;
+      let errorMessage = "Something went wrong";
+
+      if (statusCode === 404) {
+        errorMessage = "Account not found. Please sign up first.";
+      } else if (statusCode === 401) {
+        errorMessage = "Incorrect password. Please try again.";
+      } else if (statusCode === 400) {
+        errorMessage = error.response.data.message || "Invalid credentials.";
+      }
+
       toast.error(errorMessage, {
         position: "top-right",
         autoClose: 1500,

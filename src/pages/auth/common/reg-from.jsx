@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import Checkbox from "@/components/ui/Checkbox";
+import Button from "@/components/ui/Button"; // Import the Button component
 import axios from "axios"; // Import axios for API calls
 
 const schema = yup
@@ -27,6 +28,7 @@ const schema = yup
 
 const RegForm = () => {
   const [checked, setChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   const {
     register,
     formState: { errors },
@@ -39,6 +41,7 @@ const RegForm = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
+    setIsLoading(true); // Set loading state to true when submitting
     try {
       // Send registration request to the backend API
       const response = await axios.post(
@@ -68,9 +71,9 @@ const RegForm = () => {
           theme: "light",
         });
 
-        // Redirect to home or dashboard after a short delay
+        // Redirect to /admin after a short delay
         setTimeout(() => {
-          navigate("/crm");
+          navigate("/admin");
         }, 1500);
       }
     } catch (error) {
@@ -89,6 +92,8 @@ const RegForm = () => {
         progress: undefined,
         theme: "light",
       });
+    } finally {
+      setIsLoading(false); // Reset loading state after submission
     }
   };
 
@@ -144,9 +149,15 @@ const RegForm = () => {
         value={checked}
         onChange={() => setChecked(!checked)}
       />
-      <button className="btn btn-dark block w-full text-center">
+
+      {/* Use Button component and show loading state */}
+      <Button
+        type="submit"
+        className="btn btn-dark block w-full text-center"
+        isLoading={isLoading} 
+      >
         Create an account
-      </button>
+      </Button>
     </form>
   );
 };
