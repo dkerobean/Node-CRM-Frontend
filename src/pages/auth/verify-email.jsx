@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useDarkMode from "@/hooks/useDarkMode";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 import LogoWhite from "@/assets/images/logo/logo-white.svg";
 import Logo from "@/assets/images/logo/logo.svg";
@@ -41,55 +42,71 @@ const EmailVerification = () => {
   const handleSubmit = async () => {
     const verificationCode = code.join(""); // Join the 5 digits into a single string
 
-    try {
-      // Send verification request to the backend API
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/verify`,
-        {
-          email,
-          code: verificationCode,
-        }
-      );
-
-      if (response.status === 200) {
-        // Show success message
-        toast.success("Email verified successfully!", {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+    // Check if the code is complete
+    if (verificationCode.length < 5) {
+        toast.error("Please enter the complete 5-digit code.", {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
         });
-
-        // Redirect to /crm after a short delay
-        setTimeout(() => {
-          navigate("/crm");
-        }, 1500);
-      }
-    } catch (error) {
-      // Display error response from API
-      const errorMessage =
-        error.response && error.response.data
-          ? error.response.data.message || "Verification failed"
-          : "Verification failed";
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+        return;
     }
-  };
+
+    try {
+        // Send verification request to the backend API
+        const response = await axios.post(
+            `${import.meta.env.VITE_APP_BACKEND_URL}/api/verify-email`,
+            {
+                email,
+                code: verificationCode,
+            }
+        );
+
+        if (response.status === 200) {
+            // Show success message
+            toast.success(response.data.message || "Email verified successfully!", {
+                position: "top-right",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+
+            // Redirect to /crm after a short delay
+            setTimeout(() => {
+                navigate("/crm");
+            }, 1500);
+        }
+    } catch (error) {
+        const errorMessage =
+            error.response && error.response.data
+                ? error.response.data.message || "Verification failed"
+                : "Verification failed";
+        toast.error(errorMessage, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900">
+    <ToastContainer />
       <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
           <Link to="/">

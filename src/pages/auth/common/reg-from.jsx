@@ -58,7 +58,7 @@ const RegForm = () => {
       if (response.status === 201) {
         // Save token to localStorage
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem('userEmail', response.data.email); 
+        localStorage.setItem('userEmail', response.data.email);
 
         // Show success message and redirect to verify email page
         toast.success("Registration successful! Please check your email to verify your account.", {
