@@ -40,7 +40,7 @@ const EmailVerification = () => {
   };
 
   const handleSubmit = async () => {
-    const verificationCode = code.join(""); // Join the 5 digits into a single string
+    const verificationCode = code.join("");
 
     // Check if the code is complete
     if (verificationCode.length < 5) {
@@ -82,10 +82,12 @@ const EmailVerification = () => {
 
             // Redirect to /crm after a short delay
             setTimeout(() => {
-                navigate("/crm");
+                navigate("/project");
             }, 1500);
         }
     } catch (error) {
+        console.log("here is the verifucation", verificationCode);
+        console.log(email);
         const errorMessage =
             error.response && error.response.data
                 ? error.response.data.message || "Verification failed"
