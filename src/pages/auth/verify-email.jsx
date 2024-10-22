@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useDarkMode from "@/hooks/useDarkMode";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 import LogoWhite from "@/assets/images/logo/logo-white.svg";
 import Logo from "@/assets/images/logo/logo.svg";
@@ -8,6 +10,19 @@ import Logo from "@/assets/images/logo/logo.svg";
 const EmailVerification = () => {
   const [isDark] = useDarkMode();
   const [code, setCode] = useState(new Array(5).fill("")); // Array to hold 5 digits
+  const [email, setEmail] = useState(""); // State to hold email
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Retrieve email from local storage
+    const savedEmail = localStorage.getItem('userEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+    } else {
+      // Handle the case when email is not found in local storage (e.g., redirect to the registration page)
+      navigate("/register");
+    }
+  }, [navigate]);
 
   // Handle code input
   const handleChange = (element, index) => {
@@ -23,10 +38,54 @@ const EmailVerification = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const verificationCode = code.join(""); // Join the 5 digits into a single string
-    // Handle verification logic (e.g., send the code to the backend)
-    console.log("Verification code entered:", verificationCode);
+
+    try {
+      // Send verification request to the backend API
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/verify`,
+        {
+          email,
+          code: verificationCode,
+        }
+      );
+
+      if (response.status === 200) {
+        // Show success message
+        toast.success("Email verified successfully!", {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        // Redirect to /crm after a short delay
+        setTimeout(() => {
+          navigate("/crm");
+        }, 1500);
+      }
+    } catch (error) {
+      // Display error response from API
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.message || "Verification failed"
+          : "Verification failed";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
   };
 
   return (
@@ -78,6 +137,9 @@ const EmailVerification = () => {
             Resend Code
           </Link>
         </div>
+
+        {/* Hidden email input */}
+        <input type="hidden" value={email} />
       </div>
     </div>
   );

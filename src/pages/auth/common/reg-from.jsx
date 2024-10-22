@@ -57,7 +57,8 @@ const RegForm = () => {
 
       if (response.status === 201) {
         // Save token to localStorage
-        localStorage.setItem("token", response.data.token); // Adjust according to your API response
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem('userEmail', response.data.email); 
 
         // Show success message and redirect to verify email page
         toast.success("Registration successful! Please check your email to verify your account.", {
