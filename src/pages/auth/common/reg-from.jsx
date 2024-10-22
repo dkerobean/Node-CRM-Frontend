@@ -28,7 +28,7 @@ const schema = yup
 
 const RegForm = () => {
   const [checked, setChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     formState: { errors },
@@ -55,12 +55,12 @@ const RegForm = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         // Save token to localStorage
         localStorage.setItem("token", response.data.token); // Adjust according to your API response
 
-        // Show success message
-        toast.success("Registration successful!", {
+        // Show success message and redirect to verify email page
+        toast.success("Registration successful! Please check your email to verify your account.", {
           position: "top-right",
           autoClose: 1500,
           hideProgressBar: false,
@@ -71,10 +71,10 @@ const RegForm = () => {
           theme: "light",
         });
 
-        // Redirect to /admin after a short delay
+        // Redirect to /verify-email after a short delay
         setTimeout(() => {
-          navigate("/admin");
-        }, 1500);
+          navigate("/verify-email");
+        }, 1000);
       }
     } catch (error) {
       // Display error response from API
@@ -154,7 +154,7 @@ const RegForm = () => {
       <Button
         type="submit"
         className="btn btn-dark block w-full text-center"
-        isLoading={isLoading} 
+        isLoading={isLoading}
       >
         Create an account
       </Button>

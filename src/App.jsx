@@ -12,6 +12,7 @@ const BankingPage = lazy(() => import("./pages/dashboard/banking"));
 const Login = lazy(() => import("./pages/auth/login"));
 const Login2 = lazy(() => import("./pages/auth/login2"));
 const Login3 = lazy(() => import("./pages/auth/login3"));
+const Verification = lazy(() => import("./pages/auth/verify-email"));
 const Register = lazy(() => import("./pages/auth/register"));
 const Register2 = lazy(() => import("./pages/auth/register2"));
 const Register3 = lazy(() => import("./pages/auth/register3"));
@@ -157,6 +158,14 @@ function App() {
           element={
             <Suspense fallback={<Loading />}>
               <Register3 />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/verify-email"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Verification />
             </Suspense>
           }
         />
