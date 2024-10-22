@@ -18,7 +18,7 @@ const forgotPass = () => {
             </Link>
 
             <h4>
-              Unlock your Project
+              Unlock your Projectsss
               <span className="text-slate-800 dark:text-slate-400 font-bold">
                 performance
               </span>
