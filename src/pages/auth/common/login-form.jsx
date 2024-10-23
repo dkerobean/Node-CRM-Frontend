@@ -82,7 +82,7 @@ const LoginForm = () => {
         theme: "light",
       });
     } finally {
-      setIsLoading(false); // Set loading to false after the request
+      setIsLoading(false);
     }
   };
 
@@ -123,7 +123,7 @@ const LoginForm = () => {
       <Button
         text="Sign in"
         type="submit"
-        isLoading={isLoading} // Pass loading state
+        isLoading={isLoading} 
         className="btn-dark block w-full text-center"
       />
     </form>

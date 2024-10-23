@@ -217,6 +217,7 @@ function App() {
             </Suspense>
           }
         />
+
         <Route path="/*" element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="ecommerce" element={<Ecommerce />} />
@@ -287,6 +288,7 @@ function App() {
           <Route path="changelog" element={<ChangelogPage />} />
           <Route path="*" element={<Navigate to="/404" />} />
         </Route>
+
         <Route
           path="/404"
           element={
