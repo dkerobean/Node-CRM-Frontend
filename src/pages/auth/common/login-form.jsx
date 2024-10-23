@@ -55,7 +55,7 @@ const LoginForm = () => {
         });
 
         setTimeout(() => {
-          navigate("/project");
+          navigate("/crm");
         }, 1000);
       }
     } catch (error) {
@@ -123,7 +123,7 @@ const LoginForm = () => {
       <Button
         text="Sign in"
         type="submit"
-        isLoading={isLoading} 
+        isLoading={isLoading}
         className="btn-dark block w-full text-center"
       />
     </form>

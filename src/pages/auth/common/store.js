@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 const initialIsAuth = () => {
   const token = window.localStorage.getItem("token");
-  return !!token; // Return true if token exists, false otherwise
+  return !!token; 
 };
 
 export const authSlice = createSlice({
