@@ -36,6 +36,17 @@ const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const handleLogoutClick = () => {
+    // Remove the token from localStorage
+    localStorage.removeItem('authToken');
+
+    // Optionally, call your Redux action to handle any state updates
+    dispatch(handleLogout());
+
+    // Redirect to the login page
+    navigate("/login");
+  };
+
   const ProfileMenu = [
     {
       label: "Profile",
@@ -69,9 +80,7 @@ const Profile = () => {
     {
       label: "Logout",
       icon: "heroicons-outline:login",
-      action: () => {
-        dispatch(handleLogout(false));
-      },
+      action: handleLogoutClick,
     },
   ];
 
