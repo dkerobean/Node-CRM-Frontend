@@ -67,27 +67,6 @@ const Profile = () => {
       },
     },
     {
-      label: "Settings",
-      icon: "heroicons-outline:cog",
-      action: () => {
-        navigate("/settings");
-      },
-    },
-    {
-      label: "Price",
-      icon: "heroicons-outline:credit-card",
-      action: () => {
-        navigate("/pricing");
-      },
-    },
-    {
-      label: "Faq",
-      icon: "heroicons-outline:information-circle",
-      action: () => {
-        navigate("/faq");
-      },
-    },
-    {
       label: "Logout",
       icon: "heroicons-outline:login",
       action: () => {
