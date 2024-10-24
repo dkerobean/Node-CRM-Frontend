@@ -6,6 +6,8 @@ import StackBarChart from "../../components/partials/widget/chart/stack-bar";
 import Calculation from "../../components/partials/widget/chart/Calculation";
 import ExampleTwo from "../table/react-tables/ExampleTwo";
 import HomeBredCurbs from "./HomeBredCurbs";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 const campaigns = [
   {
     name: "Channel",
@@ -31,6 +33,7 @@ const campaigns = [
 const CrmPage = () => {
   return (
     <div>
+    <ToastContainer />
       <HomeBredCurbs title="Crm" />
       <div className="space-y-5">
         <div className="grid grid-cols-12 gap-5">
