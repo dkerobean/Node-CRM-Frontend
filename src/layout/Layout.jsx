@@ -27,6 +27,7 @@ const Layout = () => {
     if (!isAuth) {
       navigate("/");
     }
+    console.log(isAuth);
   }, [isAuth, navigate]);
   const switchHeaderClass = () => {
     if (menuType === "horizontal" || menuHidden) {
