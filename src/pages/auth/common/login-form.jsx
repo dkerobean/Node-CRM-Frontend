@@ -31,7 +31,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -49,10 +49,10 @@ const LoginForm = () => {
         dispatch(handleLogin({ token })); // Dispatch login action
         await dispatch(fetchUserData()); // Fetch user data after login
 
-        toast.success("Login successful!", {
-          position: "top-right",
-          autoClose: 1500,
-        });
+        // toast.success("Login successful!", {
+        //   position: "top-right",
+        //   autoClose: 1500,
+        // });
 
         setTimeout(() => {
           navigate("/crm");
