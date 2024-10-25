@@ -8,7 +8,9 @@ import Checkbox from "@/components/ui/Checkbox";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import Button from "@/components/ui/Button"; // Import your Button component
+import Button from "@/components/ui/Button";
+import { useDispatch } from "react-redux";
+import { handleLogin, fetchUserData } from "./store"; // Adjust the import path
 
 const schema = yup
   .object({
@@ -29,6 +31,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch(); 
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -42,16 +45,13 @@ const LoginForm = () => {
       );
 
       if (response.status === 200) {
-        localStorage.setItem("token", response.data.token);
+        const { token } = response.data; // Extract token from response
+        dispatch(handleLogin({ token })); // Dispatch login action
+        await dispatch(fetchUserData()); // Fetch user data after login
+
         toast.success("Login successful!", {
           position: "top-right",
           autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
         });
 
         setTimeout(() => {
@@ -74,12 +74,6 @@ const LoginForm = () => {
       toast.error(errorMessage, {
         position: "top-right",
         autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
       });
     } finally {
       setIsLoading(false);

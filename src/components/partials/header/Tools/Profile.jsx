@@ -3,35 +3,24 @@ import Dropdown from "@/components/ui/Dropdown";
 import Icon from "@/components/ui/Icon";
 import { Menu } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { handleLogout } from "@/pages/auth/common/store";
+import { useDispatch, useSelector } from "react-redux"; // Import useSelector to access state
+import { handleLogout } from "../../../../pages/auth/common/store"; // Adjust import path
 import { toast } from "react-toastify";
 import UserAvatar from "@/assets/images/all-img/user.png";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user); // Access user data from the store
 
   const handleLogoutClick = async () => {
     try {
-      // First, dispatch the logout action
       await dispatch(handleLogout());
-
-      // Remove the token
-      localStorage.removeItem('authToken');
-
-      // Show the toast notification
+      localStorage.removeItem('token'); // Correct the key used here
       toast.success("Successfully logged out!", {
         position: "top-right",
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
-
-      // Navigate after a short delay to ensure the toast is visible
       setTimeout(() => {
         navigate("/login");
       }, 1000);
@@ -84,7 +73,7 @@ const Profile = () => {
       </div>
       <div className="flex-none text-slate-600 dark:text-white text-sm font-normal items-center lg:flex hidden overflow-hidden text-ellipsis whitespace-nowrap">
         <span className="overflow-hidden text-ellipsis whitespace-nowrap w-[85px] block">
-          Albert Flores
+          {user ? user.name : "Loading..."} {/* Display user name */}
         </span>
         <span className="text-base inline-block ltr:ml-[10px] rtl:mr-[10px]">
           <Icon icon="heroicons-outline:chevron-down" />
@@ -121,6 +110,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-
-
