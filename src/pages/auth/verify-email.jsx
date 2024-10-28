@@ -80,10 +80,10 @@ const EmailVerification = () => {
                 theme: "light",
             });
 
-            // Redirect to /crm after a short delay
+            // Redirect 
             setTimeout(() => {
                 navigate("/project");
-            }, 1500);
+            }, 1000);
         }
     } catch (error) {
         console.log("here is the verifucation", verificationCode);

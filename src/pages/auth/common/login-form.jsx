@@ -55,7 +55,7 @@ const LoginForm = () => {
         // });
 
         setTimeout(() => {
-          navigate("/crm");
+          navigate("/project");
         }, 1000);
       }
     } catch (error) {
