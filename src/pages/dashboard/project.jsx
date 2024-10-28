@@ -77,7 +77,12 @@ const ProjectPage = () => {
             <div className="grid grid-cols-12 gap-5">
               <div className="xl:col-span-8 col-span-12">
                 <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
-                  <GroupChart4 />
+                  <GroupChart4
+                    totalClients={metrics?.totalClients}
+                    totalLeads={metrics?.totalLeads}
+                    totalProspects={metrics?.totalProspects}
+                    totalRevenue={metrics?.totalRevenue}
+                  />
                 </div>
               </div>
 

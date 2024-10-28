@@ -1,42 +1,38 @@
 import React from "react";
 import Icon from "@/components/ui/Icon";
 
-const statistics = [
-  {
-    title: "Total Task",
-    count: "64",
-    bg: "bg-info-500",
-    text: "text-info-500",
-    percent: "25.67% ",
-    icon: "heroicons-outline:menu-alt-1",
-  },
-  {
-    title: "Completed ",
-    count: "45",
+const GroupChart4 = ({ totalClients, totalLeads, totalProspects, totalTasks, totalRevenue }) => {
+  const statistics = [
+    {
+      title: "Total Clients",
+      count: totalClients || 0, // Use prop value or default to 0
+      bg: "bg-info-500",
+      text: "text-info-500",
+      icon: "heroicons-outline:users",
+    },
+    {
+      title: "Total Leads",
+      count: totalLeads || 0,
+      bg: "bg-warning-500",
+      text: "text-warning-500",
+      icon: "heroicons-outline:clipboard-list",
+    },
+    {
+      title: "Total Prospects",
+      count: totalProspects || 0,
+      bg: "bg-primary-500",
+      text: "text-primary-500",
+      icon: "heroicons-outline:eye",
+    },
+    {
+      title: "Total Revenue",
+      count: `$${totalRevenue || 0}`, // Format revenue with dollar sign
+      bg: "bg-success-500",
+      text: "text-success-500",
+      icon: "heroicons-outline:cash",
+    },
+  ];
 
-    bg: "bg-warning-500",
-    text: "text-warning-500",
-    percent: "8.67%",
-    icon: "heroicons-outline:chart-pie",
-  },
-  {
-    title: "Hours",
-    count: "190",
-    bg: "bg-primary-500",
-    text: "text-primary-500",
-    percent: "1.67%  ",
-    icon: "heroicons-outline:clock",
-  },
-  {
-    title: "Spendings",
-    count: "$3,564",
-    bg: "bg-success-500",
-    text: "text-success-500",
-    percent: "11.67%  ",
-    icon: "heroicons-outline:calculator",
-  },
-];
-const GroupChart4 = () => {
   return (
     <>
       {statistics.map((item, i) => (
