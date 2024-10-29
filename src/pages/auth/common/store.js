@@ -42,11 +42,11 @@ export const authSlice = createSlice({
       const { token } = action.payload;
       state.isAuth = true;
       state.token = token;
-      window.localStorage.setItem("token", token); // Save token to local storage
-      toast.success("User logged in successfully", {
-        position: "top-right",
-        autoClose: 1500,
-      });
+      window.localStorage.setItem("token", token);
+      // toast.success("User logged in successfully", {
+      //   position: "top-right",
+      //   autoClose: 1500,
+      // });
     },
     handleLogout: (state) => {
       state.isAuth = false;

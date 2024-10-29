@@ -3,7 +3,7 @@ import Chart from "react-apexcharts";
 
 import useDarkMode from "@/hooks/useDarkMode";
 
-const ProfitChart = ({
+const ProfitChart = ({ negotiations,
   className = "bg-slate-50 dark:bg-slate-900 rounded pt-3 px-4",
   color = "#4669FA",
 }) => {
@@ -83,10 +83,10 @@ const ProfitChart = ({
   return (
     <div className={className}>
       <div className="text-sm text-slate-600 dark:text-slate-300 mb-[6px]">
-        Profit
+        Negotiations
       </div>
       <div className="text-lg text-slate-900 dark:text-white font-medium mb-[6px]">
-        654k
+        { negotiations || 0 }
       </div>
       <div className="font-normal text-xs text-slate-600 dark:text-slate-300">
         <span className="text-primary-500">+02% </span>

@@ -49,14 +49,7 @@ const LoginForm = () => {
         dispatch(handleLogin({ token })); // Dispatch login action
         await dispatch(fetchUserData()); // Fetch user data after login
 
-        // toast.success("Login successful!", {
-        //   position: "top-right",
-        //   autoClose: 1500,
-        // });
-
-        setTimeout(() => {
-          navigate("/project");
-        }, 1000);
+        navigate("project");
       }
     } catch (error) {
       // Handle different server responses

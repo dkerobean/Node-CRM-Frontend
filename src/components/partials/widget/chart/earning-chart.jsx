@@ -1,16 +1,21 @@
 import React from "react";
 import Chart from "react-apexcharts";
-
 import useDarkMode from "@/hooks/useDarkMode";
 
 const EarningChart = ({
+  revenue,
+  winRate,
+  closedWon,
+  closedLost,
   className = "bg-slate-50 dark:bg-slate-900 rounded py-3 px-4 md:col-span-2",
 }) => {
   const [isDark] = useDarkMode();
-  const series = [44, 55];
+
+  // Set up the series data based on closedWon and closedLost
+  const series = [closedWon || 0, closedLost || 0];
 
   const options = {
-    labels: ["success", "Return"],
+    labels: ["Won", "Lost"],
     dataLabels: {
       enabled: false,
     },
@@ -42,7 +47,6 @@ const EarningChart = ({
         },
       },
     },
-
     responsive: [
       {
         breakpoint: 480,
@@ -54,6 +58,7 @@ const EarningChart = ({
       },
     ],
   };
+
   return (
     <div className={` ${className}`}>
       <div className="flex items-center">
@@ -62,11 +67,11 @@ const EarningChart = ({
             Earnings
           </div>
           <div className="text-lg text-slate-900 dark:text-white font-medium mb-[6px]">
-            $12,335.00
+            ${revenue ? revenue.toLocaleString() : 0} {/* Format revenue */}
           </div>
           <div className="font-normal text-xs text-slate-600 dark:text-slate-300">
-            <span className="text-primary-500">+08%</span>
-            From last Week
+            <span className="text-primary-500">+{winRate || 0}%</span> {/* Display win rate */}
+            Win Rate
           </div>
         </div>
         <div className="flex-1">
@@ -78,6 +83,14 @@ const EarningChart = ({
               series={series}
             />
           </div>
+        </div>
+      </div>
+      <div className="flex justify-between mt-4">
+        <div className="text-xs text-slate-600 dark:text-slate-300">
+          <span className="font-medium">Closed Won: </span>{closedWon || 0}
+        </div>
+        <div className="text-xs text-slate-600 dark:text-slate-300">
+          <span className="font-medium">Closed Lost: </span>{closedLost || 0}
         </div>
       </div>
     </div>

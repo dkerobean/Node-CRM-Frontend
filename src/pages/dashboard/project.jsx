@@ -15,6 +15,13 @@ import HomeBredCurbs from "./HomeBredCurbs";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
+import StackBarChart from "../../components/partials/widget/chart/stack-bar";
+
+import ProfitChart from "../../components/partials/widget/chart/profit-chart";
+import OrderChart from "../../components/partials/widget/chart/order-chart";
+import EarningChart from "../../components/partials/widget/chart/earning-chart";
+
+
 const ProjectPage = () => {
   // State to store metrics
   const [metrics, setMetrics] = useState(null);
@@ -97,49 +104,28 @@ const ProjectPage = () => {
             </div>
           </Card>
           <Card title="Deal distribution by stage" headerslot={<SelectMonth />}>
-            <BasicArea height={310} />
+            <StackBarChart />
           </Card>
         </div>
         <div className="lg:col-span-4 col-span-12 space-y-5">
-          <Card title="Notes">
-            <div className="mb-12">
-              <CalendarView />
+          <Card title="Key Performance Indicators (KPIs)">
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
+              <OrderChart
+                prospects={metrics?.totalProspects}
+              />
+              <ProfitChart
+                negotiations={metrics?.dealsStatusDistribution?.negotiation }
+              />
+              <div className="md:col-span-2">
+                <EarningChart
+                  revenue={metrics?.totalRevenue}
+                  winRate={metrics?.winRate}
+                  closedWon={metrics?.dealsStatusDistribution?.closedWon}
+                  closedLost={metrics?.dealsStatusDistribution?.closedLost}
+
+                />
+              </div>
             </div>
-            <ul className="divide-y divide-slate-100 dark:divide-slate-700">
-              {meets.map((item, i) => (
-                <li key={i} className="block py-[10px]">
-                  <div className="flex space-x-2 rtl:space-x-reverse">
-                    <div className="flex-1 flex space-x-2 rtl:space-x-reverse">
-                      <div className="flex-none">
-                        <div className="h-8 w-8">
-                          <img
-                            src={item.img}
-                            alt=""
-                            className="block w-full h-full object-cover rounded-full border hover:border-white border-transparent"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <span className="block text-slate-600 text-sm dark:text-slate-300 mb-1 font-medium">
-                          {item.title}
-                        </span>
-                        <span className="flex font-normal text-xs dark:text-slate-400 text-slate-500">
-                          <span className="text-base inline-block mr-1">
-                            <Icon icon="heroicons-outline:video-camera" />
-                          </span>
-                          {item.meet}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex-none">
-                      <span className="block text-xs text-slate-600 dark:text-slate-400">
-                        {item.date}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
           </Card>
         </div>
       </div>
