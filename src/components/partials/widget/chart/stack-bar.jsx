@@ -76,6 +76,7 @@ const StackBarChart = ({ height = 410 }) => {
 
     xaxis: {
       categories: [
+        "Jan",
         "Feb",
         "Mar",
         "Apr",
@@ -85,6 +86,8 @@ const StackBarChart = ({ height = 410 }) => {
         "Aug",
         "Sep",
         "Oct",
+        "Nov",
+        "Dec"
       ],
       labels: {
         offsetY: -3,

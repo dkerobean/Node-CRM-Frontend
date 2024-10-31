@@ -20,6 +20,7 @@ import StackBarChart from "../../components/partials/widget/chart/stack-bar";
 import ProfitChart from "../../components/partials/widget/chart/profit-chart";
 import OrderChart from "../../components/partials/widget/chart/order-chart";
 import EarningChart from "../../components/partials/widget/chart/earning-chart";
+import RevenueBarChart from "@/components/partials/widget/chart/revenue-bar-chart";
 
 
 const ProjectPage = () => {
@@ -103,8 +104,8 @@ const ProjectPage = () => {
               </div>
             </div>
           </Card>
-          <Card title="Deal distribution by stage" headerslot={<SelectMonth />}>
-            <StackBarChart />
+          <Card title="Monthly Sales Performance Overview" headerslot={<SelectMonth />}>
+            <RevenueBarChart height={420} />
           </Card>
         </div>
         <div className="lg:col-span-4 col-span-12 space-y-5">
