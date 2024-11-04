@@ -1,25 +1,94 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import useDarkMode from "@/hooks/useDarkMode";
 import useRtl from "@/hooks/useRtl";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const RevenueBarChart = ({ height = 400 }) => {
   const [isDark] = useDarkMode();
   const [isRtl] = useRtl();
-  const series = [
-    {
-      name: "Net Profit",
-      data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-    },
-    {
-      name: "Revenue",
-      data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-    },
-    {
-      name: "Free Cash Flow",
-      data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
-    },
-  ];
+  const [monthlyData, setMonthlyData] = useState(null);
+  const token = localStorage.getItem("token");
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    const fetchMonthlyData = async () => {
+      if (!token || !user?._id) {
+        console.error("No token or user ID found");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/metrics/month/data`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setMonthlyData(response.data);
+      } catch (error) {
+        console.error("Error fetching monthly data:", error);
+      }
+    };
+
+    fetchMonthlyData();
+  }, [token, user]);
+
+  // Process data for the chart
+const processChartData = () => {
+  if (!monthlyData) return null;
+
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const wonData = new Array(12).fill(0);
+  const revenueData = new Array(12).fill(0);
+  const lostData = new Array(12).fill(0);
+
+  // Fill in wonData and revenueData
+  monthlyData.closedWonData.forEach(item => {
+    const monthIndex = item.month - 1;
+    wonData[monthIndex] = item.totalWon;
+    revenueData[monthIndex] = item.totalRevenue;
+  });
+
+  // Fill in lostData
+  monthlyData.closedLostData.forEach(item => {
+    const monthIndex = item.month - 1;
+    lostData[monthIndex] = item.totalLost;
+  });
+
+  console.log('Won Data:', wonData);
+  console.log('Revenue Data:', revenueData);
+  console.log('Lost Data:', lostData);
+
+  return {
+    wonData,
+    revenueData,
+    lostData
+  };
+};
+
+
+  const chartData = processChartData();
+
+const series = chartData ? [
+  {
+    name: "Won Deals",
+    data: chartData.wonData,
+  },
+  {
+    name: "Revenue ($)",
+    data: chartData.revenueData,
+  },
+  {
+    name: "Lost Deals",
+    data: chartData.lostData,
+  },
+] : [];
+
+
   const options = {
     chart: {
       toolbar: {
@@ -56,9 +125,8 @@ const RevenueBarChart = ({ height = 400 }) => {
       },
     },
     title: {
-      text: "Revenue Report",
+      text: "Monthly Performance",
       align: "left",
-
       offsetX: isRtl ? "0%" : 0,
       offsetY: 13,
       floating: false,
@@ -88,15 +156,8 @@ const RevenueBarChart = ({ height = 400 }) => {
     },
     xaxis: {
       categories: [
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
       ],
       labels: {
         style: {
@@ -111,14 +172,16 @@ const RevenueBarChart = ({ height = 400 }) => {
         show: false,
       },
     },
-
     fill: {
       opacity: 1,
     },
     tooltip: {
       y: {
-        formatter: function (val) {
-          return "$ " + val + " thousands";
+        formatter: function (val, { seriesIndex }) {
+          if (seriesIndex === 1) {
+            return "$ " + val;
+          }
+          return val + " deals";
         },
       },
     },
@@ -147,9 +210,15 @@ const RevenueBarChart = ({ height = 400 }) => {
       },
     ],
   };
+
   return (
     <div>
-      <Chart options={options} series={series} type="bar" height={height} />
+      <Chart
+        options={options}
+        series={series}
+        type="bar"
+        height={height}
+      />
     </div>
   );
 };

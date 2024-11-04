@@ -36,7 +36,7 @@ const ProjectPage = () => {
     const getMetrics = async () => {
       if (!token || !user?._id) {
         console.error("No token or user ID found");
-        return null; // Return null if token or user ID is not available
+        return null;
       }
 
       try {
@@ -48,15 +48,14 @@ const ProjectPage = () => {
             },
           }
         );
-        console.log("Fetched Metrics:", response.data); // Log fetched metrics
-        return response.data; // Return fetched metrics
+        return response.data;
       } catch (error) {
         console.error("Error fetching metrics:", error);
-        return null; // Handle error
+        return null;
       }
     };
 
-    return getMetrics; // Return the function to call it later
+    return getMetrics;
   };
 
   // Fetch metrics on component mount
