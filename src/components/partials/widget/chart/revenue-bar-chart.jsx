@@ -37,63 +37,62 @@ const RevenueBarChart = ({ height = 400 }) => {
     fetchMonthlyData();
   }, [token, user]);
 
-  // Process data for the chart
-const processChartData = () => {
-  if (!monthlyData) return null;
+  const processChartData = () => {
+    if (!monthlyData) return null; // Return null if monthlyData is not available
 
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
-  const wonData = new Array(12).fill(0);
-  const revenueData = new Array(12).fill(0);
-  const lostData = new Array(12).fill(0);
+    const wonData = new Array(12).fill(0);
+    const revenueData = new Array(12).fill(0);
+    const lostData = new Array(12).fill(0);
 
-  // Fill in wonData and revenueData
-  monthlyData.closedWonData.forEach(item => {
-    const monthIndex = item.month - 1;
-    wonData[monthIndex] = item.totalWon;
-    revenueData[monthIndex] = item.totalRevenue;
-  });
+    // Process closed won data
+    monthlyData.closedWonData?.forEach(item => {
+      const monthIndex = item.month - 1;
+      wonData[monthIndex] = item.totalWon;
+      revenueData[monthIndex] = item.totalRevenue;
+    });
 
-  // Fill in lostData
-  monthlyData.closedLostData.forEach(item => {
-    const monthIndex = item.month - 1;
-    lostData[monthIndex] = item.totalLost;
-  });
+    // Process closed lost data
+    monthlyData.closedLostData?.forEach(item => {
+      const monthIndex = item.month - 1;
+      lostData[monthIndex] = Math.round(item.totalLost); // Ensure whole number
+    });
 
-  console.log('Won Data:', wonData);
-  console.log('Revenue Data:', revenueData);
-  console.log('Lost Data:', lostData);
-
-  return {
-    wonData,
-    revenueData,
-    lostData
+    return { wonData, revenueData, lostData };
   };
-};
-
 
   const chartData = processChartData();
 
-const series = chartData ? [
-  {
-    name: "Won Deals",
-    data: chartData.wonData,
-  },
-  {
-    name: "Revenue ($)",
-    data: chartData.revenueData,
-  },
-  {
-    name: "Lost Deals",
-    data: chartData.lostData,
-  },
-] : [];
+  // Ensure chartData is not null before accessing its properties
+  if (!chartData) {
+    return <div>Loading...</div>; // Optionally, show a loading state
+  }
 
+  // Find dynamic max values for both y-axes
+  const maxDeals = Math.max(...chartData.wonData, ...chartData.lostData);
+  const maxRevenue = Math.max(...chartData.revenueData);
+
+  const series = [
+    {
+      name: "Won Deals",
+      data: chartData.wonData,
+      type: "column",
+    },
+    {
+      name: "Lost Deals",
+      data: chartData.lostData,
+      type: "column",
+    },
+    {
+      name: "Revenue ($)",
+      data: chartData.revenueData,
+      type: "column",
+    },
+  ];
 
   const options = {
     chart: {
-      toolbar: {
-        show: false,
-      },
+      toolbar: { show: false },
+      stacked: false,
     },
     plotOptions: {
       bar: {
@@ -112,24 +111,17 @@ const series = chartData ? [
       markers: {
         width: 8,
         height: 8,
-        offsetY: -1,
-        offsetX: -5,
         radius: 12,
       },
       labels: {
         colors: isDark ? "#CBD5E1" : "#475569",
       },
-      itemMargin: {
-        horizontal: 18,
-        vertical: 0,
-      },
+      itemMargin: { horizontal: 18, vertical: 0 },
     },
     title: {
       text: "Monthly Performance",
       align: "left",
       offsetX: isRtl ? "0%" : 0,
-      offsetY: 13,
-      floating: false,
       style: {
         fontSize: "20px",
         fontWeight: "500",
@@ -137,60 +129,66 @@ const series = chartData ? [
         color: isDark ? "#fff" : "#0f172a",
       },
     },
-    dataLabels: {
-      enabled: false,
-    },
+    dataLabels: { enabled: false },
     stroke: {
       show: true,
-      width: 2,
-      colors: ["transparent"],
+      width: [0, 0, 0], // No stroke since we're using bars
+      curve: "smooth",
     },
-    yaxis: {
-      opposite: isRtl ? true : false,
-      labels: {
-        style: {
-          colors: isDark ? "#CBD5E1" : "#475569",
-          fontFamily: "Inter",
+    yaxis: [
+      {
+        title: { text: "Number of Deals" },
+        min: 0,
+        max: Math.ceil(maxDeals * 1.1), // Dynamically set max value with a buffer
+        tickAmount: 10,
+        forceNiceScale: true,
+        labels: {
+          style: {
+            colors: isDark ? "#CBD5E1" : "#475569",
+          },
         },
       },
-    },
+      {
+        title: { text: "Revenue ($)" },
+        opposite: true,
+        min: 0,
+        max: Math.ceil(maxRevenue * 1.1), // Dynamically set max value with a buffer
+        tickAmount: 10, // Adjust as needed
+        labels: {
+          style: {
+            colors: isDark ? "#CBD5E1" : "#475569",
+          },
+          formatter: (value) => `$${value.toLocaleString()}`,
+        },
+      },
+    ],
     xaxis: {
-      categories: [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-      ],
+      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
       labels: {
         style: {
           colors: isDark ? "#CBD5E1" : "#475569",
-          fontFamily: "Inter",
         },
       },
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
     },
     fill: {
-      opacity: 1,
+      opacity: [0.85, 0.85, 0.85], // Adjust opacity for bars
     },
     tooltip: {
+      shared: true,
+      intersect: false,
       y: {
-        formatter: function (val, { seriesIndex }) {
-          if (seriesIndex === 1) {
-            return "$ " + val;
-          }
-          return val + " deals";
+        formatter: (val, { seriesIndex }) => {
+          return seriesIndex === 2 ? `$${val.toLocaleString()}` : `${val} deals`;
         },
       },
     },
-    colors: ["#4669FA", "#0CE7FA", "#FA916B"],
+    colors: ["#4669FA", "#FA916B", "#0CE7FA"],
     grid: {
       show: true,
       borderColor: isDark ? "#334155" : "#E2E8F0",
       strokeDashArray: 10,
-      position: "back",
     },
     responsive: [
       {
@@ -199,7 +197,6 @@ const series = chartData ? [
           legend: {
             position: "bottom",
             offsetY: 8,
-            horizontalAlign: "center",
           },
           plotOptions: {
             bar: {
@@ -216,7 +213,7 @@ const series = chartData ? [
       <Chart
         options={options}
         series={series}
-        type="bar"
+        type="bar" // Use "bar" for the chart type
         height={height}
       />
     </div>
