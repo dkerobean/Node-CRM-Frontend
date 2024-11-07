@@ -45,6 +45,13 @@ export const menuItems = [
   },
 
   {
+    title: "Contacts",
+    isHide: true,
+    icon: "heroicons-users",
+    link: "contact",
+  },
+
+  {
     title: "Chat",
     isHide: true,
     icon: "heroicons-outline:chat",

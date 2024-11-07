@@ -99,6 +99,7 @@ const BasicWidget = lazy(() => import("./pages/widget/basic-widget"));
 const StatisticWidget = lazy(() => import("./pages/widget/statistic-widget"));
 
 // app page
+const ContactPage = lazy(() => import("./pages/app/contacts"));
 const TodoPage = lazy(() => import("./pages/app/todo"));
 const EmailPage = lazy(() => import("./pages/app/email"));
 const ChatPage = lazy(() => import("./pages/app/chat"));
@@ -225,6 +226,7 @@ function App() {
           <Route path="project" element={<ProjectPage />} />
           <Route path="banking" element={<BankingPage />} />
           {/* App pages */}
+          <Route path="contact" element={<ContactPage />} />
           <Route path="todo" element={<TodoPage />} />
           <Route path="email" element={<EmailPage />} />
           <Route path="chat" element={<ChatPage />} />
