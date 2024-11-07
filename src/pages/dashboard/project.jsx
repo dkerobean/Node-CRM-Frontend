@@ -81,6 +81,7 @@ const ProjectPage = () => {
       <div className="grid grid-cols-12 gap-5">
         <div className="lg:col-span-8 col-span-12 space-y-5">
           <Card>
+
             <div className="grid grid-cols-12 gap-5">
               <div className="xl:col-span-8 col-span-12">
                 <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
@@ -107,7 +108,7 @@ const ProjectPage = () => {
             <RevenueBarChart height={420} />
           </Card>
         </div>
-        <div className="lg:col-span-4 col-span-12 space-y-5">
+        <div className="lg:col-span-4 col-span-12 space-y-8">
           <Card title="Key Performance Indicators (KPIs)">
             <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
               <OrderChart
@@ -136,17 +137,52 @@ const ProjectPage = () => {
         <Card title="Messages" headerslot={<SelectMonth />}>
           <MessageList />
         </Card>
-        <Card title="Activity" headerslot={<SelectMonth />}>
-          <TrackingParcel />
+        <Card title="Files" headerslot={<SelectMonth />}>
+          {/* <TrackingParcel /> */}
+          <ul className="divide-y divide-slate-100 dark:divide-slate-700">
+              {files.map((item, i) => (
+                <li key={i} className="block py-[8px]">
+                  <div className="flex space-x-2 rtl:space-x-reverse">
+                    <div className="flex-1 flex space-x-2 rtl:space-x-reverse">
+                      <div className="flex-none">
+                        <div className="h-8 w-8">
+                          <img
+                            src={item.img}
+                            alt=""
+                            className="block w-full h-full object-cover rounded-full border hover:border-white border-transparent"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <span className="block text-slate-600 text-sm dark:text-slate-300">
+                          {item.title}
+                        </span>
+                        <span className="block font-normal text-xs text-slate-500 mt-1">
+                          {item.date}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-none">
+                      <button
+                        type="button"
+                        className="text-xs text-slate-900 dark:text-white"
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
         </Card>
       </div>
       <div className="grid grid-cols-12 gap-5">
-        <div className="xl:col-span-8 lg:col-span-7 col-span-12">
+        <div className="xl:col-span-12 lg:col-span-7 col-span-12">
           <Card title="Team members" noborder>
             <TeamTable />
           </Card>
         </div>
-        <div className="xl:col-span-4 lg:col-span-5 col-span-12">
+        {/* <div className="xl:col-span-4 lg:col-span-5 col-span-12">
           <Card title="Files" headerslot={<SelectMonth />}>
             <ul className="divide-y divide-slate-100 dark:divide-slate-700">
               {files.map((item, i) => (
@@ -184,7 +220,7 @@ const ProjectPage = () => {
               ))}
             </ul>
           </Card>
-        </div>
+        </div> */}
       </div>
     </div>
   );
