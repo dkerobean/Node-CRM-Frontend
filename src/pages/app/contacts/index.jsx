@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import axios from "axios"; // You can also use fetch instead of axios
+import axios from "axios";
 import { useTable, useRowSelect, useSortBy, useGlobalFilter, usePagination } from "react-table";
 import { useNavigate } from "react-router-dom";
 import Card from "@/components/ui/Card";
@@ -7,6 +7,8 @@ import Icon from "@/components/ui/Icon";
 import Dropdown from "@/components/ui/Dropdown";
 import Button from "@/components/ui/Button";
 import GlobalFilter from "../../table/react-tables/GlobalFilter";
+
+import customer1 from "@/assets/images/all-img/customer_1.png";
 
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
@@ -30,8 +32,8 @@ const IndeterminateCheckbox = React.forwardRef(
 
 const InvoicePage = () => {
   const navigate = useNavigate();
-  const [invoiceData, setInvoiceData] = useState([]); // Store fetched invoice data
-  const [loading, setLoading] = useState(true); // Track loading state
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const actions = [
     {
       name: "view",
@@ -56,74 +58,87 @@ const InvoicePage = () => {
     },
   ];
 
-  // Define columns (same as before)
-  const COLUMNS = [
-    {
-      Header: "Name",
-      accessor: "name",
-      Cell: ({ row }) => {
-        return (
-          <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
-            {row?.cell?.value}
-          </span>
-        );
-      },
-    },
-    {
-      Header: "Email",
-      accessor: "email",
-      Cell: ({ row }) => {
-        return <span className="text-sm text-slate-600 dark:text-slate-300">{row?.cell?.value}</span>;
-      },
-    },
-    {
-      Header: "Phone",
-      accessor: "phone",
-      Cell: ({ row }) => {
-        return <span className="text-sm text-slate-600 dark:text-slate-300">{row?.cell?.value}</span>;
-      },
-    },
-    {
-      Header: "Notes",
-      accessor: "notes",
-      Cell: ({ row }) => {
-        return <span className="text-sm text-slate-600 dark:text-slate-300">{row?.cell?.value}</span>;
-      },
-    },
-    {
-      Header: "Status",
+const COLUMNS = [
+  {
+    accessor: "image",  // This can be left as a placeholder or unused, but we will use the static image for now
+    Cell: () => (
+      <img src={customer1} alt="Customer" style={{ width: "50px", height: "50px", borderRadius: "50%" }} />
+    ),
+  },
+  {
+    Header: "Name",
+    accessor: "name",
+    Cell: ({ row }) => (
+      <span>{row.original.name}</span>
+    ),
+  },
+  {
+    Header: "Email",
+    accessor: "email",
+    Cell: ({ row }) => (
+      <span>{row.original.email}</span>
+    ),
+  },
+  {
+    Header: "Phone",
+    accessor: "phone",
+    Cell: ({ row }) => (
+      <span>{row.original.phone}</span>
+    ),
+  },
+  {
+    Header: "Notes",
+    accessor: "notes",
+    Cell: ({ row }) => (
+      <span>{row.original.notes}</span>
+    ),
+  },
+ {
+      Header: "status",
       accessor: "status",
-      Cell: ({ row }) => {
+      Cell: (row) => {
         return (
-          <span
-            className={`inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 ${
-              row?.cell?.value === "active"
-                ? "text-success-500 bg-success-500"
-                : row?.cell?.value === "inactive"
+          <span className="block w-full">
+            <span
+              className={` inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 ${
+                row?.cell?.value === "paid"
+                  ? "text-success-500 bg-success-500"
+                  : ""
+              }
+            ${
+              row?.cell?.value === "lead"
+                ? "text-warning-500 bg-warning-500"
+                : ""
+            }
+            ${
+              row?.cell?.value === "prospect"
                 ? "text-danger-500 bg-danger-500"
                 : ""
-            }`}
-          >
-            {row?.cell?.value}
+            }
+
+             `}
+            >
+              {row?.cell?.value}
+            </span>
           </span>
         );
       },
     },
-    {
-      Header: "Company",
-      accessor: "company",
-      Cell: ({ row }) => {
-        return <span className="text-sm text-slate-600 dark:text-slate-300">{row?.cell?.value}</span>;
-      },
-    },
-    {
-      Header: "Action",
+  {
+    Header: "Company",
+    accessor: "company",
+    Cell: ({ row }) => (
+      <span>{row.original.company}</span>
+    ),
+  },
+  {
+      Header: "action",
       accessor: "action",
       Cell: (row) => {
         return (
           <div>
             <Dropdown
-              classMenuItems="right-0 w-[140px] top-[110%]"
+              classMenuItems="right-0 w-[140px] top-[110%] "
               label={
                 <span className="text-xl text-center block w-full">
                   <Icon icon="heroicons-outline:dots-vertical" />
@@ -135,11 +150,15 @@ const InvoicePage = () => {
                   <div
                     key={i}
                     onClick={() => item.doit()}
-                    className={`${
-                      item.name === "delete"
-                        ? "bg-danger-500 text-danger-500 bg-opacity-30 hover:bg-opacity-100 hover:text-white"
-                        : "hover:bg-slate-900 hover:text-white dark:hover:bg-slate-600 dark:hover:bg-opacity-50"
-                    } w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex space-x-2 items-center rtl:space-x-reverse`}
+                    className={`
+
+                  ${
+                    item.name === "delete"
+                      ? "bg-danger-500 text-danger-500 bg-opacity-30   hover:bg-opacity-100 hover:text-white"
+                      : "hover:bg-slate-900 hover:text-white dark:hover:bg-slate-600 dark:hover:bg-opacity-50"
+                  }
+                   w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm  last:mb-0 cursor-pointer
+                   first:rounded-t last:rounded-b flex  space-x-2 items-center rtl:space-x-reverse `}
                   >
                     <span className="text-base">
                       <Icon icon={item.icon} />
@@ -153,15 +172,23 @@ const InvoicePage = () => {
         );
       },
     },
-  ];
+];
 
-  // Fetch data from API on component mount
+  // Fetch data from API with token authentication
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/invoices"); // Replace with your API endpoint
-        setInvoiceData(response.data); // Set the fetched data
+        const token = localStorage.getItem("token"); // Retrieve the token from local storage
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the Authorization header
+          },
+        };
+
+        const response = await axios.get("http://127.0.0.1:5001/api/contact/all", config); // Make the request with the config
+        setContacts(response.data.contacts); // Set the contacts data from the response
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -172,9 +199,9 @@ const InvoicePage = () => {
     fetchData();
   }, []);
 
-  // Columns and data passed to useTable
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => invoiceData, [invoiceData]);
+  const data = useMemo(() => contacts, [contacts]);
+  console.log(data);
 
   const tableInstance = useTable(
     {
@@ -233,7 +260,7 @@ const InvoicePage = () => {
     <>
       <Card noborder>
         <div className="md:flex pb-6 items-center">
-          <h6 className="flex-1 md:mb-0 mb-3">Invoice</h6>
+          <h6 className="flex-1 md:mb-0 mb-3">Contacts</h6>
           <div className="md:flex md:space-x-3 items-center flex-none rtl:space-x-reverse">
             <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
             <Button
@@ -271,10 +298,7 @@ const InvoicePage = () => {
                     <tr {...headerGroup.getHeaderGroupProps()}>
                       {headerGroup.headers.map((column) => (
                         <th
-                          {...column.getHeaderProps(
-                            column.getSortByToggleProps()
-                          )}
-                          scope="col"
+                          {...column.getHeaderProps(column.getSortByToggleProps())}
                           className="text-sm font-medium text-left text-slate-600 dark:text-slate-300 py-3.5 pl-4 pr-3 first:pl-5 last:pr-5 capitalize"
                         >
                           {column.render("Header")}
