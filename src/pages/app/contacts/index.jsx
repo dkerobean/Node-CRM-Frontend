@@ -281,7 +281,7 @@ const COLUMNS = [
               className=" btn-dark font-normal btn-sm "
               iconClass="text-lg"
               onClick={() => {
-                navigate("/invoice-add");
+                navigate("/contact-add");
               }}
             />
           </div>
