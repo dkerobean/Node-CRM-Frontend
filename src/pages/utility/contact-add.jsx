@@ -103,7 +103,7 @@ const ContactAddPage = () => {
   return (
     <div className="space-y-6">
       <Card title="Add New Contact">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
               {error}
@@ -116,51 +116,79 @@ const ContactAddPage = () => {
           )}
 
           <div className="grid lg:grid-cols-2 gap-4">
-            <Textinput
-              label="Name"
-              type="text"
-              placeholder="Enter name"
-              {...register("name", { required: "Name is required" })}
-              error={errors.name}
-            />
+            <div>
+              <label className="form-label">Name</label>
+              <input
+                type="text"
+                className="form-control"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter name"
+                required
+              />
+            </div>
 
-            <Textinput
-              label="Email"
-              type="email"
-              placeholder="Enter email"
-              {...register("email", { required: "Email is required" })}
-              error={errors.email}
-            />
+            <div>
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter email"
+                required
+              />
+            </div>
 
-            <Textinput
-              label="Phone"
-              type="text"
-              placeholder="Enter phone"
-              {...register("phone", { required: "Phone number is required" })}
-              error={errors.phone}
-            />
+            <div>
+              <label className="form-label">Phone</label>
+              <input
+                type="text"
+                className="form-control"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="Enter phone"
+                required
+              />
+            </div>
 
-            <Textinput
-              label="Company"
-              type="text"
-              placeholder="Enter company"
-              {...register("company", { required: "Company is required" })}
-              error={errors.company}
-            />
+            <div>
+              <label className="form-label">Company</label>
+              <input
+                type="text"
+                className="form-control"
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                placeholder="Enter company"
+                required
+              />
+            </div>
 
-            <Textinput
-              label="Position"
-              type="text"
-              placeholder="Enter position"
-              {...register("position", { required: "Position is required" })}
-              error={errors.position}
-            />
+            <div>
+              <label className="form-label">Position</label>
+              <input
+                type="text"
+                className="form-control"
+                name="position"
+                value={formData.position}
+                onChange={handleInputChange}
+                placeholder="Enter position"
+                required
+              />
+            </div>
 
             <div>
               <label className="form-label">Status</label>
               <select
                 className="form-control"
-                {...register("status", { required: "Status is required" })}
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                required
               >
                 <option value="lead">Lead</option>
                 <option value="prospect">Prospect</option>
@@ -172,7 +200,10 @@ const ContactAddPage = () => {
               <label className="form-label">Assigned To</label>
               <select
                 className="form-control"
-                {...register("assignedTo", { required: "Assigned user is required" })}
+                name="assignedTo"
+                value={formData.assignedTo}
+                onChange={handleInputChange}
+                required
               >
                 <option value="">Select user</option>
                 {users.map(user => (
@@ -183,12 +214,17 @@ const ContactAddPage = () => {
               </select>
             </div>
 
-            <Textarea
-              label="Notes"
-              {...register("notes")}
-              placeholder="Enter notes"
-              rows="4"
-            />
+            <div className="lg:col-span-2">
+              <label className="form-label">Notes</label>
+              <textarea
+                className="form-control"
+                name="notes"
+                value={formData.notes}
+                onChange={handleInputChange}
+                placeholder="Enter notes"
+                rows="4"
+              />
+            </div>
           </div>
 
           <div className="flex justify-end space-x-4">
