@@ -74,6 +74,7 @@ const TanstackTable = lazy(() => import("./pages/table/react-table"));
 
 // utility pages
 const ContactAdd = lazy(() => import("./pages/utility/contact-add"));
+const ContactEdit = lazy(() => import("./pages/utility/contact-edit"));
 const InvoicePage = lazy(() => import("./pages/utility/invoice"));
 const InvoiceAddPage = lazy(() => import("./pages/utility/invoice-add"));
 const InvoicePreviewPage = lazy(() =>
@@ -276,6 +277,7 @@ function App() {
           <Route path="invoice" element={<InvoicePage />} />
           <Route path="invoice-add" element={<InvoiceAddPage />} />
           <Route path="contact-add" element={<ContactAdd />} />
+          <Route path="contact-edit" element={<ContactEdit />} />
           <Route path="invoice-preview" element={<InvoicePreviewPage />} />
           <Route path="invoice-edit" element={<InvoiceEditPage />} />
           <Route path="pricing" element={<PricingPage />} />

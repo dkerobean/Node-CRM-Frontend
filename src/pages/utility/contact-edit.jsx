@@ -4,7 +4,6 @@ import Card from "@/components/ui/Card";
 import Textinput from "@/components/ui/Textinput";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
-import { toast } from "react-toastify";
 
 const ContactAddPage = () => {
   const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
@@ -43,18 +42,19 @@ const ContactAddPage = () => {
         }));
         setUsers(userOptions);
       } else {
-        toast.error("Failed to fetch users")
+        setError("Failed to fetch users");
       }
     } catch (err) {
-      toast.error("Error fetching users");
+      setError("Error fetching users");
       console.error(err);
     }
   };
 
-  const handleInputChange = (field) => (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [field]: e.target.value
+      [name]: value
     }));
   };
 
@@ -78,7 +78,7 @@ const ContactAddPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Contact added successfully!");
+        setSuccess("Contact added successfully!");
         setFormData({
           name: "",
           email: "",
@@ -90,10 +90,10 @@ const ContactAddPage = () => {
           assignedTo: ""
         });
       } else {
-        toast.error("Error adding contact", data.message);
+        setError(data.message || "Failed to add contact");
       }
     } catch (err) {
-      toast.error("Error adding contact");
+      setError("Error adding contact");
       console.error(err);
     } finally {
       setLoading(false);
@@ -117,57 +117,67 @@ const ContactAddPage = () => {
 
           <div className="grid lg:grid-cols-2 gap-4">
             <div>
-              <Textinput
-                label="Name"
+              <label className="form-label">Name</label>
+              <input
                 type="text"
-                placeholder="Enter name"
+                className="form-control"
+                name="name"
                 value={formData.name}
-                onChange={handleInputChange('name')}
-                required={true}
+                onChange={handleInputChange}
+                placeholder="Enter name"
+                required
               />
             </div>
 
             <div>
-              <Textinput
-                label="Email"
+              <label className="form-label">Email</label>
+              <input
                 type="email"
-                placeholder="Enter email"
+                className="form-control"
+                name="email"
                 value={formData.email}
-                onChange={handleInputChange('email')}
-                required={true}
+                onChange={handleInputChange}
+                placeholder="Enter email"
+                required
               />
             </div>
 
             <div>
-              <Textinput
-                label="Phone"
+              <label className="form-label">Phone</label>
+              <input
                 type="text"
-                placeholder="Enter phone"
+                className="form-control"
+                name="phone"
                 value={formData.phone}
-                onChange={handleInputChange('phone')}
-                required={true}
+                onChange={handleInputChange}
+                placeholder="Enter phone"
+                required
               />
             </div>
 
             <div>
-              <Textinput
-                label="Company"
+              <label className="form-label">Company</label>
+              <input
                 type="text"
-                placeholder="Enter company"
+                className="form-control"
+                name="company"
                 value={formData.company}
-                onChange={handleInputChange('company')}
-                required={true}
+                onChange={handleInputChange}
+                placeholder="Enter company"
+                required
               />
             </div>
 
             <div>
-              <Textinput
-                label="Position"
+              <label className="form-label">Position</label>
+              <input
                 type="text"
-                placeholder="Enter position"
+                className="form-control"
+                name="position"
                 value={formData.position}
-                onChange={handleInputChange('position')}
-                required={true}
+                onChange={handleInputChange}
+                placeholder="Enter position"
+                required
               />
             </div>
 
@@ -175,8 +185,9 @@ const ContactAddPage = () => {
               <label className="form-label">Status</label>
               <select
                 className="form-control"
+                name="status"
                 value={formData.status}
-                onChange={handleInputChange('status')}
+                onChange={handleInputChange}
                 required
               >
                 <option value="lead">Lead</option>
@@ -187,10 +198,11 @@ const ContactAddPage = () => {
 
             <div className="lg:col-span-2">
               <label className="form-label">Assigned To</label>
-              <Select
+              <select
                 className="form-control"
+                name="assignedTo"
                 value={formData.assignedTo}
-                onChange={handleInputChange('assignedTo')}
+                onChange={handleInputChange}
                 required
               >
                 <option value="">Select user</option>
@@ -199,16 +211,18 @@ const ContactAddPage = () => {
                     {user.label}
                   </option>
                 ))}
-              </Select>
+              </select>
             </div>
 
             <div className="lg:col-span-2">
-              <Textarea
-                label="Notes"
-                placeholder="Enter notes"
+              <label className="form-label">Notes</label>
+              <textarea
+                className="form-control"
+                name="notes"
                 value={formData.notes}
-                onChange={handleInputChange('notes')}
-                rows={4}
+                onChange={handleInputChange}
+                placeholder="Enter notes"
+                rows="4"
               />
             </div>
           </div>
