@@ -279,7 +279,7 @@ function App() {
           <Route path="invoice-add" element={<InvoiceAddPage />} />
           <Route path="contact-add" element={<ContactAdd />} />
           <Route path="contact-edit" element={<ContactEdit />} />
-          <Route path="contact-view" element={<ContactView />} />
+          <Route path="contact-view/:id" element={<ContactView />} />
           <Route path="invoice-preview" element={<InvoicePreviewPage />} />
           <Route path="invoice-edit" element={<InvoiceEditPage />} />
           <Route path="pricing" element={<PricingPage />} />

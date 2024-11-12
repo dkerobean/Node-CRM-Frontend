@@ -8,11 +8,12 @@ import LogoWhite from "@/assets/images/logo/logo-white.svg";
 
 const ContactDetailPage = () => {
   const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
+  const { id } = useParams(); // Use useParams to get dynamic ID
   const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isDark] = userDarkMode();
-  const id = "67019fbaad5c762a7a91adc1"; // Replace with dynamic ID or use useParams()
+  console.log("Contact ID from URL:", id);
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -46,8 +47,10 @@ const ContactDetailPage = () => {
       }
     };
 
-    fetchContact();
-  }, [id]);
+    if (id) {
+      fetchContact(); // Fetch contact only if `id` is available
+    }
+  }, [id, backendUrl]);
 
   const printPage = () => {
     window.print();
