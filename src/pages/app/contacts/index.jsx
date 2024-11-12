@@ -38,8 +38,8 @@ const InvoicePage = () => {
     {
       name: "view",
       icon: "heroicons-outline:eye",
-      doit: () => {
-        navigate("/invoice-preview");
+      doit: (id) => {
+        navigate(`/contact-view`);
       },
     },
     {
@@ -59,6 +59,15 @@ const InvoicePage = () => {
   ];
 
 const COLUMNS = [
+  {
+    Header: "ID",
+    accessor: "id", // Assuming the contact object has an 'id' property
+    Cell: ({ row }) => (
+      <span>{row.original.id}</span> // Display the contact's id here
+    ),
+    // Add className to hide the column
+    className: "hidden-column",
+  },
   {
     accessor: "image",  // This can be left as a placeholder or unused, but we will use the static image for now
     Cell: () => (
@@ -131,47 +140,49 @@ const COLUMNS = [
       <span>{row.original.company}</span>
     ),
   },
-  {
-      Header: "action",
-      accessor: "action",
-      Cell: (row) => {
-        return (
-          <div>
-            <Dropdown
-              classMenuItems="right-0 w-[140px] top-[110%] "
-              label={
-                <span className="text-xl text-center block w-full">
-                  <Icon icon="heroicons-outline:dots-vertical" />
-                </span>
-              }
-            >
-              <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                {actions.map((item, i) => (
-                  <div
-                    key={i}
-                    onClick={() => item.doit()}
-                    className={`
+{
+  Header: "action",
+  accessor: "action",
+  Cell: (row) => {
+    // const contactId = row.original.id;
+    return (
+      <div>
+        <Dropdown
+          classMenuItems="right-0 w-[140px] top-[110%] "
+          label={
+            <span className="text-xl text-center block w-full">
+              <Icon icon="heroicons-outline:dots-vertical" />
+            </span>
+          }
+        >
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            {actions.map((item, i) => (
+              <div
+                key={i}
+                onClick={() => item.doit("contactId")}
+                className={`
 
-                  ${
-                    item.name === "delete"
-                      ? "bg-danger-500 text-danger-500 bg-opacity-30   hover:bg-opacity-100 hover:text-white"
-                      : "hover:bg-slate-900 hover:text-white dark:hover:bg-slate-600 dark:hover:bg-opacity-50"
-                  }
-                   w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm  last:mb-0 cursor-pointer
-                   first:rounded-t last:rounded-b flex  space-x-2 items-center rtl:space-x-reverse `}
-                  >
-                    <span className="text-base">
-                      <Icon icon={item.icon} />
-                    </span>
-                    <span>{item.name}</span>
-                  </div>
-                ))}
+                ${
+                  item.name === "delete"
+                    ? "bg-danger-500 text-danger-500 bg-opacity-30   hover:bg-opacity-100 hover:text-white"
+                    : "hover:bg-slate-900 hover:text-white dark:hover:bg-slate-600 dark:hover:bg-opacity-50"
+                }
+                 w-full border-b border-b-gray-500 border-opacity-10 px-4 py-2 text-sm  last:mb-0 cursor-pointer
+                 first:rounded-t last:rounded-b flex  space-x-2 items-center rtl:space-x-reverse `}
+              >
+                <span className="text-base">
+                  <Icon icon={item.icon} />
+                </span>
+                <span>{item.name}</span>
               </div>
-            </Dropdown>
+            ))}
           </div>
-        );
-      },
-    },
+        </Dropdown>
+      </div>
+    );
+  },
+}
+
 ];
 
   // Fetch data from API with token authentication
