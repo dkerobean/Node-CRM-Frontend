@@ -9,6 +9,8 @@ import Button from "@/components/ui/Button";
 import GlobalFilter from "../../table/react-tables/GlobalFilter";
 
 import customer1 from "@/assets/images/all-img/customer_1.png";
+import DeleteModal from "../../components/deleteModal";
+import { toast } from "react-toastify";
 
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
@@ -34,6 +36,9 @@ const InvoicePage = () => {
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteContactId, setDeleteContactId] = useState(null);  // State to store contact ID to delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);  // Modal visibility state
+
   const actions = [
     {
       name: "view",
@@ -53,7 +58,8 @@ const InvoicePage = () => {
       name: "delete",
       icon: "heroicons-outline:trash",
       doit: (id) => {
-        return null;
+        setDeleteContactId(id);  // Set the contact ID to delete
+        setShowDeleteModal(true); // Show the delete confirmation modal
       },
     },
   ];
@@ -187,12 +193,14 @@ const COLUMNS = [
 
 ];
 
+  const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
+  const token = localStorage.getItem("token");
+
   // Fetch data from API with token authentication
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token"); // Retrieve the token from local storage
 
         const config = {
           headers: {
@@ -200,7 +208,7 @@ const COLUMNS = [
           },
         };
 
-        const response = await axios.get("http://127.0.0.1:5001/api/contact/all", config); // Make the request with the config
+        const response = await axios.get(`${backendUrl}/api/contact/all`, config); // Make the request with the config
         setContacts(response.data.contacts); // Set the contacts data from the response
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -211,6 +219,31 @@ const COLUMNS = [
 
     fetchData();
   }, []);
+
+  // Function to handle opening the modal
+  const handleOpenDeleteModal = () => {
+    setShowDeleteModal(true);
+  };
+
+  // Function to handle closing the modal
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+  };
+
+  // Function to handle deletion
+  const handleDeleteContact = async () => {
+    try {
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.delete(`${backendUrl}/api/contact/delete/${deleteContactId}`, config);
+      setContacts(contacts.filter(contact => contact._id !== deleteContactId));
+      setShowDeleteModal(false);
+      toast.success("Contact deleted successfully!"); // Toast message after successful deletion
+    } catch (error) {
+      console.error("Error deleting contact: ", error);
+      toast.error("Error deleting contact."); // Toast message for deletion error
+    }
+  };
+
 
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => contacts, [contacts]);
@@ -272,6 +305,13 @@ const COLUMNS = [
   return (
     <>
       <Card noborder>
+      {showDeleteModal && (
+        <DeleteModal
+          show={showDeleteModal}
+          onAccept={handleDeleteContact}
+          onClose={handleCloseDeleteModal}
+        />
+      )}
         <div className="md:flex pb-6 items-center">
           <h6 className="flex-1 md:mb-0 mb-3">Contacts</h6>
           <div className="md:flex md:space-x-3 items-center flex-none rtl:space-x-reverse">
