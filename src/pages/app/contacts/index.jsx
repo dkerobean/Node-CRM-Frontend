@@ -51,7 +51,7 @@ const InvoicePage = () => {
       name: "edit",
       icon: "heroicons:pencil-square",
       doit: (id) => {
-        navigate("/contact-edit");
+        navigate(`/contact-edit/${id}`);
       },
     },
     {

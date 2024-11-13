@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Textinput from "@/components/ui/Textinput";
 import Textarea from "@/components/ui/Textarea";
-import Select from "@/components/ui/Select";
+import Select from "react-select";
+import { toast } from "react-toastify";
 
-const ContactAddPage = () => {
+const ContactEditPage = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
+
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -15,16 +20,33 @@ const ContactAddPage = () => {
     company: "",
     position: "",
     notes: "",
-    status: "lead",
-    assignedTo: ""
+    status: { value: "lead", label: "Lead" },
+    assignedTo: null
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const statusOptions = [
+    { value: "lead", label: "Lead" },
+    { value: "prospect", label: "Prospect" },
+    { value: "customer", label: "Customer" }
+  ];
+
+  const styles = {
+    option: (provided) => ({
+      ...provided,
+      fontSize: "14px",
+    }),
+  };
+
   useEffect(() => {
     fetchUsers();
-  }, []);
+    if (id) {
+      fetchContactData();
+    }
+  }, [id]);
 
   const fetchUsers = async () => {
     try {
@@ -42,19 +64,63 @@ const ContactAddPage = () => {
         }));
         setUsers(userOptions);
       } else {
-        setError("Failed to fetch users");
+        toast.error("Failed to fetch users");
       }
     } catch (err) {
-      setError("Error fetching users");
+      toast.error("Error fetching users");
       console.error(err);
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const fetchContactData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${backendUrl}/api/contact/view/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        const contactData = data.contact;
+
+        // Wait for users to be fetched before setting form data
+        const assignedUser = users.find(user => user.value === contactData.assignedTo) || null;
+
+        // Check if status is part of leadDetails and set it accordingly
+        const statusValue = contactData.status || (contactData.leadDetails && contactData.leadDetails.status) || "lead";
+
+        // Set form data once users are fetched and status is determined
+        setFormData({
+          name: contactData.name,
+          email: contactData.email,
+          phone: contactData.phone,
+          company: contactData.company,
+          position: contactData.position,
+          notes: contactData.notes,
+          status: { value: statusValue, label: statusValue.charAt(0).toUpperCase() + statusValue.slice(1) },
+          assignedTo: assignedUser
+        });
+      } else {
+        toast.error("Failed to fetch contact data");
+      }
+    } catch (err) {
+      toast.error("Error fetching contact data");
+      console.error(err);
+    }
+  };
+
+  const handleInputChange = (field) => (e) => {
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [field]: e.target.value
+    }));
+  };
+
+  const handleSelectChange = (field) => (selectedOption) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: selectedOption
     }));
   };
 
@@ -64,36 +130,35 @@ const ContactAddPage = () => {
     setError("");
     setSuccess("");
 
+    // Prepare data for submission - extract values from select options
+    const submissionData = {
+      ...formData,
+      status: formData.status?.value || 'lead',
+      assignedTo: formData.assignedTo?.value || ''
+    };
+
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${backendUrl}/api/contact/add`, {
-        method: "POST",
+      const response = await fetch(`${backendUrl}/api/contact/edit/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submissionData)
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Contact added successfully!");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          company: "",
-          position: "",
-          notes: "",
-          status: "lead",
-          assignedTo: ""
-        });
+        toast.success("Contact updated successfully!");
+        // Redirect to contacts page after successful update
+        navigate('/contact');
       } else {
-        setError(data.message || "Failed to add contact");
+        toast.error("Error updating contact", data.message);
       }
     } catch (err) {
-      setError("Error adding contact");
+      toast.error("Error updating contact");
       console.error(err);
     } finally {
       setLoading(false);
@@ -102,7 +167,7 @@ const ContactAddPage = () => {
 
   return (
     <div className="space-y-6">
-      <Card title="Add New Contact">
+      <Card title="Edit Contact">
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
@@ -117,119 +182,101 @@ const ContactAddPage = () => {
 
           <div className="grid lg:grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Name</label>
-              <input
+              <Textinput
+                label="Name"
                 type="text"
-                className="form-control"
-                name="name"
+                placeholder={formData.name}
                 value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter name"
-                required
+                onChange={handleInputChange('name')}
+                required={true}
               />
             </div>
 
             <div>
-              <label className="form-label">Email</label>
-              <input
+              <Textinput
+                label="Email"
                 type="email"
-                className="form-control"
-                name="email"
+                placeholder={formData.email}
                 value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter email"
-                required
+                onChange={handleInputChange('email')}
+                required={true}
               />
             </div>
 
             <div>
-              <label className="form-label">Phone</label>
-              <input
+              <Textinput
+                label="Phone"
                 type="text"
-                className="form-control"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
                 placeholder="Enter phone"
-                required
+                value={formData.phone}
+                onChange={handleInputChange('phone')}
+                required={true}
               />
             </div>
 
             <div>
-              <label className="form-label">Company</label>
-              <input
+              <Textinput
+                label="Company"
                 type="text"
-                className="form-control"
-                name="company"
-                value={formData.company}
-                onChange={handleInputChange}
                 placeholder="Enter company"
-                required
+                value={formData.company}
+                onChange={handleInputChange('company')}
+                required={true}
               />
             </div>
 
             <div>
-              <label className="form-label">Position</label>
-              <input
+              <Textinput
+                label="Position"
                 type="text"
-                className="form-control"
-                name="position"
-                value={formData.position}
-                onChange={handleInputChange}
                 placeholder="Enter position"
-                required
+                value={formData.position}
+                onChange={handleInputChange('position')}
+                required={true}
               />
             </div>
 
             <div>
               <label className="form-label">Status</label>
-              <select
-                className="form-control"
-                name="status"
+              <Select
+                className="react-select"
+                classNamePrefix="select"
+                options={statusOptions}
                 value={formData.status}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="lead">Lead</option>
-                <option value="prospect">Prospect</option>
-                <option value="customer">Customer</option>
-              </select>
+                onChange={handleSelectChange('status')}
+                styles={styles}
+                isClearable={false}
+              />
             </div>
 
             <div className="lg:col-span-2">
               <label className="form-label">Assigned To</label>
-              <select
-                className="form-control"
-                name="assignedTo"
+              <Select
+                className="react-select"
+                classNamePrefix="select"
+                options={users}
                 value={formData.assignedTo}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select user</option>
-                {users.map(user => (
-                  <option key={user.value} value={user.value}>
-                    {user.label}
-                  </option>
-                ))}
-              </select>
+                onChange={handleSelectChange('assignedTo')}
+                styles={styles}
+                isClearable
+                placeholder="Select user"
+              />
             </div>
 
             <div className="lg:col-span-2">
-              <label className="form-label">Notes</label>
-              <textarea
-                className="form-control"
-                name="notes"
-                value={formData.notes}
-                onChange={handleInputChange}
+              <Textarea
+                label="Notes"
                 placeholder="Enter notes"
-                rows="4"
+                value={formData.notes}
+                onChange={handleInputChange('notes')}
+                rows={4}
               />
             </div>
           </div>
 
           <div className="flex justify-end space-x-4">
             <Button
-              text={loading ? "Adding..." : "Add Contact"}
+              text={loading ? "Updating..." : "Update Contact"}
               type="submit"
               className="btn-dark"
               disabled={loading}
@@ -241,4 +288,4 @@ const ContactAddPage = () => {
   );
 };
 
-export default ContactAddPage;
+export default ContactEditPage;

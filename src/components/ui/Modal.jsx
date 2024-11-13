@@ -1,8 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
-import React, { Fragment, useState, forwardRef } from "react";
+import React, { Fragment, useState } from "react";
 import Icon from "@/components/ui/Icon";
 
-const Modal = forwardRef(({
+const Modal = ({
   activeModal,
   onClose,
   noFade,
@@ -17,23 +17,20 @@ const Modal = forwardRef(({
   uncontrol,
   label = "Basic Modal",
   labelClass,
-}, ref) => {
+  ref,
+}) => {
   const [showModal, setShowModal] = useState(false);
 
   const closeModal = () => {
     setShowModal(false);
-    onClose?.();
   };
 
   const openModal = () => {
-    setShowModal(true);
+    setShowModal(!showModal);
   };
-
   const returnNull = () => {
     return null;
   };
-
-  const modalProps = uncontrol ? { show: showModal, onClose: closeModal } : { show: activeModal, onClose: onClose };
 
   return (
     <>
@@ -46,12 +43,11 @@ const Modal = forwardRef(({
           >
             {label}
           </button>
-          <Transition appear show={modalProps.show} as={Fragment}>
+          <Transition appear show={showModal} as={Fragment}>
             <Dialog
               as="div"
               className="relative z-[99999]"
               onClose={!disableBackdrop ? closeModal : returnNull}
-              ref={ref}
             >
               {!disableBackdrop && (
                 <Transition.Child
@@ -69,11 +65,13 @@ const Modal = forwardRef(({
 
               <div className="fixed inset-0 overflow-y-auto">
                 <div
-                  className={`flex min-h-full justify-center text-center p-6 ${centered ? "items-center" : "items-start "}`}
+                  className={`flex min-h-full justify-center text-center p-6 ${
+                    centered ? "items-center" : "items-start "
+                  }`}
                 >
                   <Transition.Child
                     as={Fragment}
-                    enter={noFade ? "" : "duration-300 ease-out"}
+                    enter={noFade ? "" : "duration-300  ease-out"}
                     enterFrom={noFade ? "" : "opacity-0 scale-95"}
                     enterTo={noFade ? "" : "opacity-100 scale-100"}
                     leave={noFade ? "" : "duration-200 ease-in"}
@@ -81,9 +79,12 @@ const Modal = forwardRef(({
                     leaveTo={noFade ? "" : "opacity-0 scale-95"}
                   >
                     <Dialog.Panel
-                      className={`w-full transform overflow-hidden rounded-md bg-white dark:bg-slate-800 text-left align-middle shadow-xl transition-all ${className}`}
+                      className={`w-full transform overflow-hidden rounded-md
+                 bg-white dark:bg-slate-800 text-left align-middle shadow-xl transition-alll ${className}`}
                     >
-                      <div className={`relative overflow-hidden py-4 px-5 text-white flex justify-between ${themeClass}`}>
+                      <div
+                        className={`relative overflow-hidden py-4 px-5 text-white flex justify-between  ${themeClass}`}
+                      >
                         <h2 className="capitalize leading-6 tracking-wider font-medium text-base text-white">
                           {title}
                         </h2>
@@ -91,7 +92,11 @@ const Modal = forwardRef(({
                           <Icon icon="heroicons-outline:x" />
                         </button>
                       </div>
-                      <div className={`px-6 py-8 ${scrollContent ? "overflow-y-auto max-h-[400px]" : ""}`}>
+                      <div
+                        className={`px-6 py-8 ${
+                          scrollContent ? "overflow-y-auto max-h-[400px]" : ""
+                        }`}
+                      >
                         {children}
                       </div>
                       {footerContent && (
@@ -107,8 +112,8 @@ const Modal = forwardRef(({
           </Transition>
         </>
       ) : (
-        <Transition appear show={modalProps.show} as={Fragment}>
-          <Dialog as="div" className="relative z-[99999]" onClose={modalProps.onClose}>
+        <Transition appear show={activeModal} as={Fragment}>
+          <Dialog as="div" className="relative z-[99999]" onClose={onClose}>
             <Transition.Child
               as={Fragment}
               enter={noFade ? "" : "duration-300 ease-out"}
@@ -125,11 +130,13 @@ const Modal = forwardRef(({
 
             <div className="fixed inset-0 overflow-y-auto">
               <div
-                className={`flex min-h-full justify-center text-center p-6 ${centered ? "items-center" : "items-start "}`}
+                className={`flex min-h-full justify-center text-center p-6 ${
+                  centered ? "items-center" : "items-start "
+                }`}
               >
                 <Transition.Child
                   as={Fragment}
-                  enter={noFade ? "" : "duration-300 ease-out"}
+                  enter={noFade ? "" : "duration-300  ease-out"}
                   enterFrom={noFade ? "" : "opacity-0 scale-95"}
                   enterTo={noFade ? "" : "opacity-100 scale-100"}
                   leave={noFade ? "" : "duration-200 ease-in"}
@@ -137,17 +144,24 @@ const Modal = forwardRef(({
                   leaveTo={noFade ? "" : "opacity-0 scale-95"}
                 >
                   <Dialog.Panel
-                    className={`w-full transform overflow-hidden rounded-md bg-white dark:bg-slate-800 text-left align-middle shadow-xl transition-all ${className}`}
+                    className={`w-full transform overflow-hidden rounded-md
+                 bg-white dark:bg-slate-800 text-left align-middle shadow-xl transition-alll ${className}`}
                   >
-                    <div className={`relative overflow-hidden py-4 px-5 text-white flex justify-between ${themeClass}`}>
+                    <div
+                      className={`relative overflow-hidden py-4 px-5 text-white flex justify-between  ${themeClass}`}
+                    >
                       <h2 className="capitalize leading-6 tracking-wider font-medium text-base text-white">
                         {title}
                       </h2>
-                      <button onClick={modalProps.onClose} className="text-[22px]">
+                      <button onClick={onClose} className="text-[22px]">
                         <Icon icon="heroicons-outline:x" />
                       </button>
                     </div>
-                    <div className={`px-6 py-8 ${scrollContent ? "overflow-y-auto max-h-[400px]" : ""}`}>
+                    <div
+                      className={`px-6 py-8 ${
+                        scrollContent ? "overflow-y-auto max-h-[400px]" : ""
+                      }`}
+                    >
                       {children}
                     </div>
                     {footerContent && (
@@ -164,6 +178,6 @@ const Modal = forwardRef(({
       )}
     </>
   );
-});
+};
 
 export default Modal;

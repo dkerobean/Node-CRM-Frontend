@@ -13,7 +13,6 @@ const ContactDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isDark] = userDarkMode();
-  console.log("Contact ID from URL:", id);
 
   useEffect(() => {
     const fetchContact = async () => {
