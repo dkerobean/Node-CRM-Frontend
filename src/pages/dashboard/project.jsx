@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import {useDispatch } from "react-redux";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import GroupChart4 from "@/components/partials/widget/chart/group-chart-4";
@@ -14,6 +15,7 @@ import CalendarView from "@/components/partials/widget/CalendarView";
 import HomeBredCurbs from "./HomeBredCurbs";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import StackBarChart from "../../components/partials/widget/chart/stack-bar";
 
@@ -21,23 +23,34 @@ import ProfitChart from "../../components/partials/widget/chart/profit-chart";
 import OrderChart from "../../components/partials/widget/chart/order-chart";
 import EarningChart from "../../components/partials/widget/chart/earning-chart";
 import RevenueBarChart from "@/components/partials/widget/chart/revenue-bar-chart";
+import { fetchUserData } from "../auth/common/store";
 
 
 const ProjectPage = () => {
-  // State to store metrics
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [metrics, setMetrics] = useState(null);
-  const token = localStorage.getItem("token"); // Retrieve token from local storage
-  const user = useSelector((state) => state.auth.user); // Get user from Redux store
+  const { user, loading, initialized, isAuth } = useSelector((state) => state.auth);
+  const token = localStorage.getItem("token");
 
+  // Initialize auth state
+  useEffect(() => {
+    if (token && !user && !loading && !initialized) {
+      dispatch(fetchUserData());
+    }
+  }, [dispatch, token, user, loading, initialized]);
 
-  // Define useFetchMetrics function
-  const useFetchMetrics = () => {
+  // Redirect if no auth
+  useEffect(() => {
+    if (initialized && !isAuth) {
+      navigate('/login');
+    }
+  }, [initialized, isAuth, navigate]);
 
+  // Fetch metrics when user data is available
+  useEffect(() => {
     const getMetrics = async () => {
-      if (!token || !user?._id) {
-        console.error("No token or user ID found");
-        return null;
-      }
+      if (!user?._id) return;
 
       try {
         const response = await axios.get(
@@ -48,31 +61,28 @@ const ProjectPage = () => {
             },
           }
         );
-        return response.data;
+        setMetrics(response.data);
       } catch (error) {
         console.error("Error fetching metrics:", error);
-        return null;
+        if (error.response?.status === 401) {
+          navigate('/login');
+        }
       }
     };
 
-    return getMetrics;
-  };
+    if (user) {
+      getMetrics();
+    }
+  }, [user, token, navigate]);
 
-  // Fetch metrics on component mount
-  useEffect(() => {
-    const getMetrics = async () => {
-      const fetchMetrics = useFetchMetrics();
-      const data = await fetchMetrics();
-      if (data) {
-        console.log("Metrics data received:", data);
-        setMetrics(data);
-      } else {
-        console.error("No data received for metrics.");
-      }
-    };
-
-    getMetrics();
-  }, []);
+  // Show loading state while initializing
+  if (!initialized || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
 
   return (

@@ -2,30 +2,24 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-// Check if the user is authenticated based on the presence of a token
-const initialIsAuth = () => {
-  const token = window.localStorage.getItem("token");
-  return !!token;
-};
-
 // Async thunk to fetch user data
 export const fetchUserData = createAsyncThunk(
   "auth/fetchUserData",
   async (_, { rejectWithValue }) => {
-    const token = window.localStorage.getItem("token"); // Get the token directly from local storage
-    if (!token) {
-      return rejectWithValue("No token found");
-    }
-
     try {
+      const token = window.localStorage.getItem("token");
+      if (!token) throw new Error("Token is missing");
+
       const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the request headers
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data; // Return user data from API response
+
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to fetch user data");
+      if (error.response?.status === 401) {
+        window.localStorage.removeItem("token");
+      }
+      throw error;
     }
   }
 );
@@ -33,9 +27,12 @@ export const fetchUserData = createAsyncThunk(
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    isAuth: initialIsAuth(),
+    isAuth: !!window.localStorage.getItem("token"),
     token: window.localStorage.getItem("token") || null,
-    user: null, // To store user data
+    user: null,
+    loading: false,
+    error: null,
+    initialized: false, // Add this to track initial load
   },
   reducers: {
     handleLogin: (state, action) => {
@@ -43,32 +40,41 @@ export const authSlice = createSlice({
       state.isAuth = true;
       state.token = token;
       window.localStorage.setItem("token", token);
-      // toast.success("User logged in successfully", {
-      //   position: "top-right",
-      //   autoClose: 1500,
-      // });
     },
     handleLogout: (state) => {
       state.isAuth = false;
       state.token = null;
-      state.user = null; // Clear user data on logout
-      window.localStorage.removeItem("token"); // Remove token from local storage
-      toast.success("User logged out successfully", {
-        position: "top-right",
-      });
+      state.user = null;
+      state.initialized = true;
+      window.localStorage.removeItem("token");
+      toast.success("User logged out successfully");
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUserData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchUserData.fulfilled, (state, action) => {
-        state.user = action.payload; // Store user data in state
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+        state.initialized = true;
       })
       .addCase(fetchUserData.rejected, (state, action) => {
-        toast.error(action.payload || "Failed to load user data");
+        state.loading = false;
+        state.error = action.error.message;
+        state.initialized = true;
+        if (action.error.message.includes('401')) {
+          state.isAuth = false;
+          state.token = null;
+          state.user = null;
+          window.localStorage.removeItem("token");
+        }
       });
   },
 });
 
-// Export actions and reducer
 export const { handleLogin, handleLogout } = authSlice.actions;
 export default authSlice.reducer;

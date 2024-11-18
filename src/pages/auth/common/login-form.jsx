@@ -33,45 +33,71 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/login`,
-        {
-          email: data.email,
-          password: data.password,
-        }
-      );
+  // const onSubmit = async (data) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_APP_BACKEND_URL}/api/login`,
+  //       {
+  //         email: data.email,
+  //         password: data.password,
+  //       }
+  //     );
 
-      if (response.status === 200) {
-        const { token } = response.data; // Extract token from response
-        dispatch(handleLogin({ token })); // Dispatch login action
-        await dispatch(fetchUserData()); // Fetch user data after login
+  //     if (response.status === 200) {
+  //       const { token } = response.data; // Extract token from response
+  //       dispatch(handleLogin({ token })); // Dispatch login action
+  //       await dispatch(fetchUserData()); // Fetch user data after login
 
-        navigate("project");
+  //       navigate("project");
+  //     }
+  //   } catch (error) {
+  //     // Handle different server responses
+  //     const statusCode = error.response ? error.response.status : 500;
+  //     let errorMessage = "Something went wrong";
+
+  //     if (statusCode === 404) {
+  //       errorMessage = "Account not found. Please sign up first.";
+  //     } else if (statusCode === 401) {
+  //       errorMessage = "Incorrect password. Please try again.";
+  //     } else if (statusCode === 400) {
+  //       errorMessage = error.response.data.message || "Invalid credentials.";
+  //     }
+
+  //     toast.error(errorMessage, {
+  //       position: "top-right",
+  //       autoClose: 1500,
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+const onSubmit = async (data) => {
+  setIsLoading(true);
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_BACKEND_URL}/api/login`,
+      { email: data.email, password: data.password }
+    );
+
+    if (response.status === 200) {
+      const { token } = response.data;
+      dispatch(handleLogin({ token }));
+
+      const userFetchResult = await dispatch(fetchUserData());
+      if (userFetchResult.meta.requestStatus === "fulfilled") {
+        navigate("/project");
+      } else {
+        throw new Error("User data fetch failed");
       }
-    } catch (error) {
-      // Handle different server responses
-      const statusCode = error.response ? error.response.status : 500;
-      let errorMessage = "Something went wrong";
-
-      if (statusCode === 404) {
-        errorMessage = "Account not found. Please sign up first.";
-      } else if (statusCode === 401) {
-        errorMessage = "Incorrect password. Please try again.";
-      } else if (statusCode === 400) {
-        errorMessage = error.response.data.message || "Invalid credentials.";
-      }
-
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 1500,
-      });
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Login failed");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
