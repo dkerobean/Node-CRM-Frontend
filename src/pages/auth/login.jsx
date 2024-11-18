@@ -23,9 +23,9 @@ const login = () => {
                 <img src={isDark ? LogoWhite : Logo} alt="" className="mb-10" />
               </Link>
               <h4>
-                Unlock your Project
+               Maximize Your <br></br>
                 <span className="text-slate-800 dark:text-slate-400 font-bold">
-                  performance
+                  CRM Potential
                 </span>
               </h4>
             </div>
@@ -75,7 +75,7 @@ const login = () => {
                 </div>
               </div>
               <div className="auth-footer text-center">
-                Copyright 2021, Dashcode All Rights Reserved.
+                Copyright {new Date().getFullYear()}, Dashcode All Rights Reserved.
               </div>
             </div>
           </div>
