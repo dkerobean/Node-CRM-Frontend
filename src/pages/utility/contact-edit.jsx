@@ -207,7 +207,7 @@ const ContactEditPage = () => {
               <Textinput
                 label="Phone"
                 type="text"
-                placeholder="Enter phone"
+                placeholder={formData.phone}
                 value={formData.phone}
                 onChange={handleInputChange('phone')}
                 required={true}
@@ -218,7 +218,7 @@ const ContactEditPage = () => {
               <Textinput
                 label="Company"
                 type="text"
-                placeholder="Enter company"
+                placeholder={formData.company}
                 value={formData.company}
                 onChange={handleInputChange('company')}
                 required={true}
@@ -229,7 +229,7 @@ const ContactEditPage = () => {
               <Textinput
                 label="Position"
                 type="text"
-                placeholder="Enter position"
+                placeholder={formData.position}
                 value={formData.position}
                 onChange={handleInputChange('position')}
                 required={true}
@@ -266,7 +266,7 @@ const ContactEditPage = () => {
             <div className="lg:col-span-2">
               <Textarea
                 label="Notes"
-                placeholder="Enter notes"
+                placeholder={formData.notes}
                 value={formData.notes}
                 onChange={handleInputChange('notes')}
                 rows={4}

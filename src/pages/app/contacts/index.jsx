@@ -9,7 +9,6 @@ import Button from "@/components/ui/Button";
 import GlobalFilter from "../../table/react-tables/GlobalFilter";
 
 import customer1 from "@/assets/images/all-img/customer_1.png";
-import DeleteModal from "../../components/deleteModal";
 import { toast } from "react-toastify";
 
 const IndeterminateCheckbox = React.forwardRef(
@@ -36,8 +35,7 @@ const InvoicePage = () => {
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleteContactId, setDeleteContactId] = useState(null);  // State to store contact ID to delete
-  const [showDeleteModal, setShowDeleteModal] = useState(false);  // Modal visibility state
+  const [deleteContactId, setDeleteContactId] = useState(null);
 
   const actions = [
     {
@@ -58,8 +56,7 @@ const InvoicePage = () => {
       name: "delete",
       icon: "heroicons-outline:trash",
       doit: (id) => {
-        setDeleteContactId(id);  // Set the contact ID to delete
-        setShowDeleteModal(true); // Show the delete confirmation modal
+        handleDeleteContact(id); // Call the delete function directly
       },
     },
   ];
@@ -220,31 +217,42 @@ const COLUMNS = [
     fetchData();
   }, []);
 
-  // Function to handle opening the modal
-  const handleOpenDeleteModal = () => {
-    setShowDeleteModal(true);
-  };
-
-  // Function to handle closing the modal
-  const handleCloseDeleteModal = () => {
-    setShowDeleteModal(false);
-  };
-
   // Function to handle deletion
-  const handleDeleteContact = async () => {
-    try {
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.delete(`${backendUrl}/api/contact/delete/${deleteContactId}`, config);
-      setContacts(contacts.filter(contact => contact._id !== deleteContactId));
-      setShowDeleteModal(false);
-      toast.success("Contact deleted successfully!"); // Toast message after successful deletion
-    } catch (error) {
-      console.error("Error deleting contact: ", error);
-      toast.error("Error deleting contact."); // Toast message for deletion error
+const handleDeleteContact = async (contactId) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this contact?"
+  );
+
+  if (!confirmDelete) {
+    return; // Exit the function if the user cancels
+  }
+
+  try {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.delete(
+      `${backendUrl}/api/contact/delete/${contactId}`,
+      config
+    );
+
+    // Check if the response contains a message and display it
+    if (response.data && response.data.message) {
+      toast.success(response.data.message); // Use the API response message for success
+    } else {
+      toast.success("Contact deleted successfully!"); // Fallback success message
     }
-  };
 
+    setContacts(contacts.filter((contact) => contact._id !== contactId)); // Update contact list
+  } catch (error) {
+    // Extract the error message from the response if available
+    const errorMessage =
+      error.response && error.response.data && error.response.data.message
+        ? error.response.data.message
+        : "Error deleting contact."; // Fallback error message
 
+    toast.error(errorMessage); // Display the error message in a toast
+    console.error("Error deleting contact: ", error);
+  }
+};
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => contacts, [contacts]);
   console.log(data);
@@ -305,13 +313,6 @@ const COLUMNS = [
   return (
     <>
       <Card noborder>
-      {showDeleteModal && (
-        <DeleteModal
-          show={showDeleteModal}
-          onAccept={handleDeleteContact}
-          onClose={handleCloseDeleteModal}
-        />
-      )}
         <div className="md:flex pb-6 items-center">
           <h6 className="flex-1 md:mb-0 mb-3">Contacts</h6>
           <div className="md:flex md:space-x-3 items-center flex-none rtl:space-x-reverse">
@@ -457,8 +458,7 @@ const COLUMNS = [
           </div>
         </div>
       </Card>
-    </>
-  );
+    </> );
 };
 
 export default InvoicePage;
