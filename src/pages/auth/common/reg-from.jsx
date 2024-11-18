@@ -39,52 +39,29 @@ const RegForm = () => {
   });
 
   const navigate = useNavigate();
-
-  const onSubmit = async (data) => {
-    setIsLoading(true); // Set loading state to true when submitting
-    try {
-      // Send registration request to the backend API
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/register`,
-        {
-          ownerName: data.ownerName,
-          email: data.email,
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-          orgName: data.orgName,
-        }
-      );
-
-      if (response.status === 201) {
-        // Save token to localStorage
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem('userEmail', response.data.email);
-        localStorage.setItem('userId', response.data._id);
-
-        // Show success message and redirect to verify email page
-        toast.success("Registration successful! Please check your email to verify your account.", {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-
-        // Redirect to /verify-email after a short delay
-        setTimeout(() => {
-          navigate("/verify-email");
-        }, 1000);
+const onSubmit = async (data) => {
+  setIsLoading(true); // Set loading state to true when submitting
+  try {
+    // Send registration request to the backend API
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_BACKEND_URL}/api/register`,
+      {
+        ownerName: data.ownerName,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        orgName: data.orgName,
       }
-    } catch (error) {
-      // Display error response from API
-      const errorMessage =
-        error.response && error.response.data
-          ? error.response.data.message || "Registration failed"
-          : "Registration failed";
-      toast.error(errorMessage, {
+    );
+
+    if (response.status === 201) {
+      // Save token to localStorage
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem('userEmail', response.data.email);
+      localStorage.setItem('userId', response.data._id);
+
+      // Show success message and redirect to verify email page
+      toast.success("Registration successful! Please check your email to verify your account.", {
         position: "top-right",
         autoClose: 1500,
         hideProgressBar: false,
@@ -94,10 +71,32 @@ const RegForm = () => {
         progress: undefined,
         theme: "light",
       });
-    } finally {
-      setIsLoading(false); // Reset loading state after submission
+
+      // Redirect to /verify-email after a short delay
+      setTimeout(() => {
+        navigate("/verify-email");
+      }, 1000);
     }
-  };
+  } catch (error) {
+    // Display error response from API
+    const errorMessage =
+      error.response && error.response.data
+        ? error.response.data.message || "Registration failed"
+        : "Registration failed";
+    toast.error(errorMessage, {
+      position: "top-right",
+      autoClose: 1500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  } finally {
+    setIsLoading(false); // Reset loading state after submission
+  }
+};
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
