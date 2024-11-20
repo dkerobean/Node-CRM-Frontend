@@ -2,21 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useWidth from "@/hooks/useWidth";
 import Button from "@/components/ui/Button";
-import ProjectGrid from "./ProjectGrid";
-import ProjectList from "./ProjectList";
+import TaskGrid from "./TaskGrid";
+import TaskList from "./TaskList";
 import GridLoading from "@/components/skeleton/Grid";
 import TableLoading from "@/components/skeleton/Table";
 import { toggleAddModal } from "./store";
-import AddProject from "./AddProject";
+import AddTask from "./AddTask";
 import { ToastContainer } from "react-toastify";
-import EditProject from "./EditProject";
+import EditTask from "./EditTask";
 
-const ProjectPostPage = () => {
-  const [filler, setfiller] = useState("grid");
+const TasksPage = () => {
+  const [view, setView] = useState("grid");
   const { width, breakpoints } = useWidth();
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const { projects } = useSelector((state) => state.project);
+  // Safely access tasks from state
+  const taskState = useSelector((state) => state.task || { tasks: [] });
+  const { tasks } = taskState;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -24,14 +26,14 @@ const ProjectPostPage = () => {
     setTimeout(() => {
       setIsLoaded(false);
     }, 1500);
-  }, [filler]);
+  }, [view]);
 
   return (
     <div>
       <ToastContainer />
       <div className="flex flex-wrap justify-between items-center mb-4">
         <h4 className="font-medium lg:text-2xl text-xl capitalize text-slate-900 inline-block ltr:pr-4 rtl:pl-4">
-          Project
+          Tasks
         </h4>
         <div
           className={`${
@@ -43,63 +45,59 @@ const ProjectPostPage = () => {
             text="List view"
             disabled={isLoaded}
             className={`${
-              filler === "list"
-                ? "bg-slate-900 dark:bg-slate-700  text-white"
-                : " bg-white dark:bg-slate-800 dark:text-slate-300"
-            }   h-min text-sm font-normal`}
-            iconClass=" text-lg"
-            onClick={() => setfiller("list")}
+              view === "list"
+                ? "bg-slate-900 dark:bg-slate-700 text-white"
+                : "bg-white dark:bg-slate-800 dark:text-slate-300"
+            } h-min text-sm font-normal`}
+            iconClass="text-lg"
+            onClick={() => setView("list")}
           />
           <Button
             icon="heroicons-outline:view-grid"
             text="Grid view"
             disabled={isLoaded}
             className={`${
-              filler === "grid"
+              view === "grid"
                 ? "bg-slate-900 dark:bg-slate-700 text-white"
-                : " bg-white dark:bg-slate-800 dark:text-slate-300"
-            }   h-min text-sm font-normal`}
-            iconClass=" text-lg"
-            onClick={() => setfiller("grid")}
+                : "bg-white dark:bg-slate-800 dark:text-slate-300"
+            } h-min text-sm font-normal`}
+            iconClass="text-lg"
+            onClick={() => setView("grid")}
           />
           <Button
             icon="heroicons-outline:filter"
-            text="On going"
-            className="bg-white dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-900 hover:text-white btn-md  h-min text-sm font-normal"
-            iconClass=" text-lg"
+            text="In Progress"
+            className="bg-white dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-900 hover:text-white btn-md h-min text-sm font-normal"
+            iconClass="text-lg"
           />
           <Button
             icon="heroicons-outline:plus"
-            text="Add Project"
-            className="btn-dark dark:bg-slate-800  h-min text-sm font-normal"
-            iconClass=" text-lg"
+            text="Add Task"
+            className="btn-dark dark:bg-slate-800 h-min text-sm font-normal"
+            iconClass="text-lg"
             onClick={() => dispatch(toggleAddModal(true))}
           />
         </div>
       </div>
-      {isLoaded && filler === "grid" && (
-        <GridLoading count={projects?.length} />
-      )}
-      {isLoaded && filler === "list" && (
-        <TableLoading count={projects?.length} />
-      )}
+      {isLoaded && view === "grid" && <GridLoading count={tasks?.length} />}
+      {isLoaded && view === "list" && <TableLoading count={tasks?.length} />}
 
-      {filler === "grid" && !isLoaded && (
+      {view === "grid" && !isLoaded && (
         <div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
-          {projects.map((project, projectIndex) => (
-            <ProjectGrid project={project} key={projectIndex} />
+          {tasks.map((task, index) => (
+            <TaskGrid task={task} key={index} />
           ))}
         </div>
       )}
-      {filler === "list" && !isLoaded && (
+      {view === "list" && !isLoaded && (
         <div>
-          <ProjectList projects={projects} />
+          <TaskList tasks={tasks} />
         </div>
       )}
-      <AddProject />
-      <EditProject />
+      <AddTask />
+      <EditTask />
     </div>
   );
 };
 
-export default ProjectPostPage;
+export default TasksPage;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select, { components } from "react-select";
 import Modal from "@/components/ui/Modal";
 import { useSelector, useDispatch } from "react-redux";
-import { updateProject, toggleEditModal } from "./store";
+import { updateTask, toggleEditModal } from "./store";
 import Icon from "@/components/ui/Icon";
 import Textarea from "@/components/ui/Textarea";
 import Flatpickr from "react-flatpickr";
@@ -123,7 +123,7 @@ const EditProject = () => {
 
   const onSubmit = (data) => {
     dispatch(
-      updateProject({
+      updateTask({
         id: editItem.id,
         name: data.name,
         des: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",

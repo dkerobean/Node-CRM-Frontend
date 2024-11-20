@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Select, { components } from "react-select";
 import Modal from "@/components/ui/Modal";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleAddModal, pushProject } from "./store";
+import { toggleAddModal, pushTask } from "./store";
 import Textinput from "@/components/ui/Textinput";
 import Textarea from "@/components/ui/Textarea";
 import Flatpickr from "react-flatpickr";
@@ -131,7 +131,7 @@ const AddProject = () => {
       progress: Math.floor(Math.random() * (100 - 10 + 1) + 10),
     };
 
-    dispatch(pushProject(project));
+    dispatch(pushTask(project));
     dispatch(toggleAddModal(false));
     reset();
   };

@@ -1,86 +1,41 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
-
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import avatar1 from "@/assets/images/avatar/av-1.svg";
-import avatar2 from "@/assets/images/avatar/av-2.svg";
-import avatar3 from "@/assets/images/avatar/av-3.svg";
-import avatar4 from "@/assets/images/avatar/av-4.svg";
+import axios from "axios";
+
+// Define async thunk to fetch tasks
+export const fetchTasks = createAsyncThunk(
+  'approject/fetchTasks',
+  async (_, { rejectWithValue }) => {
+    try {
+      // Retrieve the token from local storage
+      const token = localStorage.getItem('token');
+
+      // Set the Authorization header with the token
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Add the token here
+        }
+      };
+
+      const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tasks/all`, config);
+      return response.data.tasks;
+      console.log(response.data.tasks);
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
+
 
 export const appProjectSlice = createSlice({
   name: "approject",
   initialState: {
     openProjectModal: false,
-    isLoading: null,
+    isLoading: false,
     editItem: {},
     editModal: false,
-    projects: [
-      {
-        id: uuidv4(),
-        assignee: [
-          {
-            image: avatar1,
-            label: "Mahedi Amin",
-          },
-          {
-            image: avatar2,
-            label: "Sovo Haldar",
-          },
-          {
-            image: avatar3,
-            label: "Rakibul Islam",
-          },
-        ],
-        name: "Management Dashboard ",
-        des: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-        startDate: "2022-10-03",
-        endDate: "2022-10-06",
-        progress: 75,
-        category: [
-          {
-            value: "team",
-            label: "team",
-          },
-          {
-            value: "low",
-            label: "low",
-          },
-        ],
-      },
-      {
-        id: uuidv4(),
-        assignee: [
-          {
-            image: avatar1,
-            label: "Mahedi Amin",
-          },
-          {
-            image: avatar2,
-            label: "Sovo Haldar",
-          },
-          {
-            image: avatar3,
-            label: "Rakibul Islam",
-          },
-        ],
-        name: "Business Dashboard ",
-        des: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-        startDate: "2022-10-03",
-        endDate: "2022-10-10",
-        progress: 50,
-
-        category: [
-          {
-            value: "team",
-            label: "team",
-          },
-          {
-            value: "low",
-            label: "low",
-          },
-        ],
-      },
-    ],
+    projects: [],
+    error: null,
   },
   reducers: {
     toggleAddModal: (state, action) => {
@@ -89,7 +44,7 @@ export const appProjectSlice = createSlice({
     toggleEditModal: (state, action) => {
       state.editModal = action.payload;
     },
-    pushProject: (state, action) => {
+    pushTask: (state, action) => {
       state.projects.unshift(action.payload);
 
       toast.success("Add Successfully", {
@@ -103,10 +58,8 @@ export const appProjectSlice = createSlice({
         theme: "light",
       });
     },
-    removeProject: (state, action) => {
-      state.projects = state.projects.filter(
-        (item) => item.id !== action.payload
-      );
+    removeTask: (state, action) => {
+      state.projects = state.projects.filter((item) => item.id !== action.payload);
       toast.warning("Remove Successfully", {
         position: "top-right",
         autoClose: 1500,
@@ -118,37 +71,40 @@ export const appProjectSlice = createSlice({
         theme: "light",
       });
     },
-    updateProject: (state, action) => {
-      // update project and  store it into editItem when click edit button
-
+    updateTask: (state, action) => {
       state.editItem = action.payload;
-      // toggle edit modal
       state.editModal = !state.editModal;
-      // find index
-      let index = state.projects.findIndex(
-        (item) => item.id === action.payload.id
-      );
-      // update project
-      state.projects.splice(index, 1, {
-        id: action.payload.id,
-        name: action.payload.name,
-        des: action.payload.des,
-        startDate: action.payload.startDate,
-        endDate: action.payload.endDate,
-        assignee: action.payload.assignee,
-        progress: action.payload.progress,
-        category: action.payload.category,
-      });
+      let index = state.projects.findIndex((item) => item.id === action.payload.id);
+      state.projects.splice(index, 1, action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTasks.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchTasks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.projects = action.payload;
+      })
+      .addCase(fetchTasks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        toast.error("Failed to fetch tasks", {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      });
   },
 });
 
-export const {
-  openModal,
-  pushProject,
-  toggleAddModal,
-  removeProject,
-  toggleEditModal,
-  updateProject,
-} = appProjectSlice.actions;
+export const { toggleAddModal, toggleEditModal, pushTask, removeTask, updateTask } = appProjectSlice.actions;
+
 export default appProjectSlice.reducer;

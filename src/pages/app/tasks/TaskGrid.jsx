@@ -5,7 +5,7 @@ import Dropdown from "@/components/ui/Dropdown";
 import { Menu } from "@headlessui/react";
 import Icon from "@/components/ui/Icon";
 import ProgressBar from "@/components/ui/ProgressBar";
-import { removeProject, updateProject } from "./store";
+import { removeTask, updateTask } from "./store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -68,7 +68,7 @@ const ProjectGrid = ({ project }) => {
                   <span>View</span>
                 </div>
               </Menu.Item>
-              <Menu.Item onClick={() => dispatch(updateProject(project))}>
+              <Menu.Item onClick={() => dispatch(updateTask(project))}>
                 <div
                   className="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white
                    w-full border-b border-b-gray-500 border-opacity-10   px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex  space-x-2 items-center
@@ -80,7 +80,7 @@ const ProjectGrid = ({ project }) => {
                   <span>Edit</span>
                 </div>
               </Menu.Item>
-              <Menu.Item onClick={() => dispatch(removeProject(project.id))}>
+              <Menu.Item onClick={() => dispatch(removeTask(project.id))}>
                 <div
                   className="hover:bg-slate-900 dark:hover:bg-slate-600 dark:hover:bg-opacity-70 hover:text-white
                    w-full border-b border-b-gray-500 border-opacity-10   px-4 py-2 text-sm dark:text-slate-300  last:mb-0 cursor-pointer first:rounded-t last:rounded-b flex  space-x-2 items-center
