@@ -104,6 +104,7 @@ const StatisticWidget = lazy(() => import("./pages/widget/statistic-widget"));
 // app page
 const ContactPage = lazy(() => import("./pages/app/contacts"));
 const TodoPage = lazy(() => import("./pages/app/todo"));
+const TaskPage = lazy(() => import("./pages/app/tasks"));
 const EmailPage = lazy(() => import("./pages/app/email"));
 const ChatPage = lazy(() => import("./pages/app/chat"));
 const ProjectPostPage = lazy(() => import("./pages/app/projects"));
@@ -231,6 +232,7 @@ function App() {
           {/* App pages */}
           <Route path="contact" element={<ContactPage />} />
           <Route path="todo" element={<TodoPage />} />
+          <Route path="tasks" element={<TaskPage />} />
           <Route path="email" element={<EmailPage />} />
           <Route path="chat" element={<ChatPage />} />
           <Route path="projects" element={<ProjectPostPage />} />

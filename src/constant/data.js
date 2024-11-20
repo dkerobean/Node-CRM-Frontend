@@ -52,6 +52,13 @@ export const menuItems = [
   },
 
   {
+    title: "Tasks",
+    isHide: true,
+    icon: "heroicons-outline:clipboard-check",
+    link: "tasks",
+  },
+
+  {
     title: "Chat",
     isHide: true,
     icon: "heroicons-outline:chat",
