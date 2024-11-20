@@ -63,7 +63,7 @@ const InvoicePage = () => {
 
 const COLUMNS = [
   {
-    Header: "ID",
+    Header: "",
     accessor: "id", // Assuming the contact object has an 'id' property
     Cell: ({ row }) => (
       <span>{row.original.id}</span> // Display the contact's id here
